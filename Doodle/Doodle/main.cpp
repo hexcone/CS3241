@@ -47,6 +47,20 @@ void drawBackground()
 	glEnd();
 }
 
+void drawSun()
+{
+	glBegin(GL_TRIANGLE_FAN);
+		glColor4f(255 / 255.0, 228 / 255.0, 0, 1);
+		glVertex2f(900, 700);
+
+		glColor4f(255 / 255.0, 228 / 255.0, 0, 0);
+		for (int i = 0; i <= 360; i++) {
+			float degInRad = i * M_PI / 180;
+			glVertex2f(900 + cos(degInRad) * 400, 700 + sin(degInRad) * 400);
+		}
+	glEnd();
+}
+
 void drawTriangle(double color_r, double color_g, double color_b,
 	double vertex1_x, double vertex1_y, 
 	double vertex2_x, double vertex2_y, 
@@ -78,6 +92,9 @@ void display(void)
 	//draw background
 	drawBackground();
 
+	//draw sun
+	drawSun();
+	
 	//draw beak
 	drawTriangle(58 / 255.0, 43 / 255.0, 41 / 255.0, 51, 393, 38, 440, 90, 442);
 	drawTriangle(50 / 255.0, 33 / 255.0, 28 / 255.0, 38, 440, 90, 442, 62, 470);
@@ -148,13 +165,13 @@ void display(void)
 	drawTriangle(225 / 255.0, 188 / 255.0, 148 / 255.0, 362, 522, 348, 528, 335, 510);
 	drawTriangle(217 / 255.0, 198 / 255.0, 165 / 255.0, 362, 522, 335, 510, 332, 487);
 	drawTriangle(199 / 255.0, 137 / 255.0, 71 / 255.0, 348, 528, 335, 510, 335, 532);
-	drawTriangle(64 / 255.0, 44 / 255.0, 44 / 255.0, 348, 528, 335, 532, 346, 546);
-	drawTriangle(69 / 255.0, 45 / 255.0, 39 / 255.0, 335, 532, 346, 546, 330, 543);
-	drawTriangle(83 / 255.0, 54 / 255.0, 34 / 255.0, 346, 546, 330, 543, 330, 557);
-	drawTriangle(73 / 255.0, 51 / 255.0, 33 / 255.0, 346, 546, 330, 557, 346, 562);
-	drawTriangle(60 / 255.0, 33 / 255.0, 22 / 255.0, 346, 546, 346, 562, 362, 551);
-	drawTriangle(52 / 255.0, 28 / 255.0, 18 / 255.0, 346, 546, 362, 551, 358, 538);
-	drawTriangle(38 / 255.0, 28 / 255.0, 35 / 255.0, 346, 546, 358, 538, 348, 528);
+	drawTriangle(64 / 255.0, 44 / 255.0, 124 / 255.0, 348, 528, 335, 532, 346, 546);
+	drawTriangle(69 / 255.0, 45 / 255.0, 119 / 255.0, 335, 532, 346, 546, 330, 543);
+	drawTriangle(83 / 255.0, 54 / 255.0, 114 / 255.0, 346, 546, 330, 543, 330, 557);
+	drawTriangle(73 / 255.0, 51 / 255.0, 113 / 255.0, 346, 546, 330, 557, 346, 562);
+	drawTriangle(60 / 255.0, 33 / 255.0, 102 / 255.0, 346, 546, 346, 562, 362, 551);
+	drawTriangle(52 / 255.0, 28 / 255.0, 98 / 255.0, 346, 546, 362, 551, 358, 538);
+	drawTriangle(38 / 255.0, 28 / 255.0, 115 / 255.0, 346, 546, 358, 538, 348, 528);
 
 	//draw body
 	drawTriangle(144 / 255.0, 130 / 255.0, 126 / 255.0, 316, 574, 330, 578, 330, 598);
@@ -257,7 +274,7 @@ void display(void)
 	drawTriangle(109 / 255.0, 97 / 255.0, 63 / 255.0, 674, -71, 743, -71, 700, -200);
 	drawTriangle(133 / 255.0, 121 / 255.0, 85 / 255.0, 743, -71, 700, -200, 755, -200);
 	drawTriangle(133 / 255.0, 103 / 255.0, 63 / 255.0, 552, -71, 674, -71, 700, -200);
-
+	
 	glPopMatrix();
 	glFlush();
 }
@@ -324,8 +341,7 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 
 	case 'w':
-		//ty += 0.1;
-		ty += 10;
+		ty += 0.1;
 		glutPostRedisplay();
 		break;
 
@@ -354,6 +370,8 @@ int main(int argc, char **argv)
 	glutInitWindowPosition(50, 50);
 	glutCreateWindow(argv[0]);
 	init();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	//glutMouseFunc(mouse);
