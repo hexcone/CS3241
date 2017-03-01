@@ -61,16 +61,19 @@ void drawSphere(double r) {
 
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	float mat_diffuse[] = { 0.1f, 0.5f, 0.8f, 1.0f };
+	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
+	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float no_shininess = 0.0f;
+	float shininess = 100.0f;
 	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
 	if (m_Highlight)
 	{
-		// your codes for highlight here
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
 	}
 	else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
