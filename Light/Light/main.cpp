@@ -58,7 +58,6 @@ void setupLighting() {
 
 
 void drawSphere(double r) {
-
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
@@ -79,7 +78,6 @@ void drawSphere(double r) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
-
 
 	int i, j;
 	int n = 20;
@@ -122,12 +120,70 @@ void drawSphere(double r) {
 	}
 }
 
+void drawCone(double h, double r) {
+	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
+	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float no_shininess = 0.0f;
+	float shininess = 100.0f;
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+
+	if (m_Highlight)
+	{
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+	}
+	else {
+		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
+	}
+
+	int i, j;
+	int n = 20;
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < 2 * n; j++) {
+			if (m_Smooth) {
+				glBegin(GL_POLYGON);
+
+				// from http://mathworld.wolfram.com/Cone.html
+				// x = [(h-u)/h]*r*cos(theta)
+				// y = [(h-u)/h]*r*sin(theta)
+				// z = u
+				// where 0 <= u <= h
+				// and 0 <= theta < (2*PI)
+				glNormal3d(((h - (i / n * h)) / h)*cos(j*M_PI / n), ((h - (i / n * h)) / h)*sin(j*M_PI / n), ((i / n * h)));
+				glVertex3d(((h - (i / n * h)) / h)* r*cos(j*M_PI / n), ((h - (i / n * h)) / h)*r*sin(j*M_PI / n), (i / n * h));
+
+				glNormal3d(((h - ((i + 1) / n * h)) / h)* cos(j*M_PI / n), ((h - ((i + 1) / n * h)) / h)*sin(j*M_PI / n), (((i + 1) / n * h)));
+				glVertex3d(((h - ((i + 1) / n * h)) / h)* r*cos(j*M_PI / n), ((h - ((i + 1) / n * h)) / h)*r*sin(j*M_PI / n), (((i + 1) / n * h)));
+
+				glNormal3d(((h - ((i + 1) / n * h)) / h)* cos((j + 1)*M_PI / n), ((h - ((i + 1) / n * h)) / h)*sin((j + 1)*M_PI / n), (((i + 1) / n * h)));
+				glVertex3d(((h - ((i + 1) / n * h)) / h)* r*cos((j + 1)*M_PI / n), ((h - ((i + 1) / n * h)) / h)*r*sin((j + 1)*M_PI / n), (((i + 1) / n * h)));
+
+				glNormal3d(((h - (i / n * h)) / h)* cos((j + 1)*M_PI / n), ((h - (i / n * h)) / h)*sin((j + 1)*M_PI / n), (i / n * h));
+				glVertex3d(((h - (i / n * h)) / h)* r*cos((j + 1)*M_PI / n), ((h - (i / n * h)) / h)*r*sin((j + 1)*M_PI / n), (i / n * h));
+				glEnd();
+			}
+			else {
+				glBegin(GL_POLYGON);
+				glNormal3d(((h - ((i + 0.5) / n * h)) / h)*cos((j + 0.5)*M_PI / n), ((h - ((i + 0.5) / n * h)) / h)*sin((j + 0.5)*M_PI / n), (((i + 0.5) / n * h)));
+				glVertex3d(((h - (i / n * h)) / h)* r*cos(j*M_PI / n), ((h - (i / n * h)) / h)*r*sin(j*M_PI / n), (i / n * h));
+				glVertex3d(((h - ((i + 1) / n * h)) / h)* r*cos(j*M_PI / n), ((h - ((i + 1) / n * h)) / h)*r*sin(j*M_PI / n), (((i + 1) / n * h)));
+				glVertex3d(((h - ((i + 1) / n * h)) / h)* r*cos((j + 1)*M_PI / n), ((h - ((i + 1) / n * h)) / h)*r*sin((j + 1)*M_PI / n), (((i + 1) / n * h)));
+				glVertex3d(((h - (i / n * h)) / h)* r*cos((j + 1)*M_PI / n), ((h - (i / n * h)) / h)*r*sin((j + 1)*M_PI / n), (i / n * h));
+				glEnd();
+			}
+		}
+	}
+}
+
 void display(void) {
 	//Add Projection tool and Camera Movement somewhere here
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-
-
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -143,7 +199,7 @@ void display(void) {
 		drawSphere(1);
 		break;
 	case 1:
-		// draw your second primitive object here
+		drawCone(2, 1);
 		break;
 	case 2:
 		// draw your first composite object here
