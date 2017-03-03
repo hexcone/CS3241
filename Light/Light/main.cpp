@@ -56,11 +56,9 @@ void setupLighting() {
 
 }
 
-
-void drawSphere(double r) {
+void drawSphere(double r, float mat_diffuse[]) {
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
 	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float no_shininess = 0.0f;
@@ -118,10 +116,9 @@ void drawSphere(double r) {
 	}
 }
 
-void drawSemiSphere(double r) {
+void drawSemiSphere(double r, float mat_diffuse[]) {
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
 	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float no_shininess = 0.0f;
@@ -180,11 +177,9 @@ void drawSemiSphere(double r) {
 	}
 }
 
-
-void drawEllipsoid(double a, double b, double c) {
+void drawEllipsoid(double a, double b, double c, float mat_diffuse[]) {
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
 	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float no_shininess = 0.0f;
@@ -243,10 +238,9 @@ void drawEllipsoid(double a, double b, double c) {
 	}
 }
 
-void drawCylinder(double h, double r) {
+void drawCylinder(double h, double r, float mat_diffuse[]) {
 	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
-	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
 	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	float no_shininess = 0.0f;
@@ -267,62 +261,172 @@ void drawCylinder(double h, double r) {
 
 	int i, j;
 	int n = 20;
-	for (i = 0; i < n; i++) {
-		for (j = 0; j < 2 * n; j++) {
-			if (m_Smooth) {
-				glBegin(GL_POLYGON);
+	for (j = 0; j < 2 * n; j++) {
+		if (m_Smooth) {
+			glBegin(GL_POLYGON);
 
-				// from http://mathworld.wolfram.com/Cylinder.html
-				// x = r*cos(theta)
-				// y = r*sin(theta)
-				// z = z
-				// and 0 <= u <= h, is our (i / n * h)
-				// where 0 <= theta < 2*PI, is our (j*M_PI / n)	
-				glNormal3d(cos(j*M_PI / n), sin(j*M_PI / n), (i / n * h));
-				glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), (i / n * h));
+			// from http://mathworld.wolfram.com/Cylinder.html
+			// x = r*cos(theta)
+			// y = r*sin(theta)
+			// z = z
+			// and 0 <= u <= h, is our (i / n * h)
+			// where 0 <= theta < 2*PI, is our (j*M_PI / n)	
+			glNormal3d(cos(j*M_PI / n), sin(j*M_PI / n), 0);
+			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), 0);
 
-				glNormal3d(cos(j*M_PI / n), sin(j*M_PI / n), ((i + 1) / n * h));
-				glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), ((i + 1) / n * h));
+			glNormal3d(cos(j*M_PI / n), sin(j*M_PI / n), h);
+			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), h);
 
-				glNormal3d(cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n), ((i + 1) / n * h));
-				glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), ((i + 1) / n * h));
+			glNormal3d(cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n), h);
+			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), h);
 
-				glNormal3d(cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n), (i / n * h));
-				glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), (i / n * h));
-				glEnd();
-			}
-			else {
-				glBegin(GL_POLYGON);
-				// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
-				glNormal3d(cos((j+0.5)*M_PI / n), sin((j+0.5)*M_PI / n), ((i+0.5) / n * h));
-				glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), (i / n * h));
-				glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), ((i + 1) / n * h));
-				glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), ((i + 1) / n * h));
-				glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), (i / n * h));
-				glEnd();
-			}
+			glNormal3d(cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n), 0);
+			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), 0);
+			glEnd();
+		}
+		else {
+			glBegin(GL_POLYGON);
+			// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
+			glNormal3d(cos((j+0.5)*M_PI / n), sin((j+0.5)*M_PI / n), h / 2);
+			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), 0);
+			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), h);
+			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), h);
+			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), 0);
+			glEnd();
 		}
 	}
 
-	// draw top
+	// draw lid
+	
 	glBegin(GL_POLYGON);
+	glNormal3d(0, 0, 1);
 	for (int i = 0; i < 360; i++)
 	{
 		float rad = i*M_PI / 180;
-		glNormal3d(cos(rad), sin(rad), h);
 		glVertex3f(r * cos(rad), r* sin(rad), h);
 	}
 	glEnd();
 
+	glPushMatrix();
+	glRotatef(180, 1, 0, 0);
+	glTranslatef(0, 0, -h);
 	// draw bottom
 	glBegin(GL_POLYGON);
-	for (int i = 360; i > 0; i--)
+	glNormal3d(0, 0, 1);
+	for (int i = 0; i < 360; i++)
 	{
 		float rad = i*M_PI / 180;
-		glNormal3d(cos(rad), sin(rad), 0);
-		glVertex3f(r * cos(rad), r* sin(rad), 0);
+		glVertex3f(r * cos(rad), r* sin(rad), h);
 	}
 	glEnd();
+	glPopMatrix();
+}
+
+void drawPokeball() {
+	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+	float mat_diffuse_black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_diffuse_white[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// main ball
+	drawSphere(1.05, mat_diffuse_black);
+	glPushMatrix();
+		glTranslatef(0, 0, 0.1);
+		drawSemiSphere(1.1, mat_diffuse_red);
+	glPopMatrix();
+	glPushMatrix();
+		glRotatef(180, 1, 0, 0);
+		glTranslatef(0, 0, 0.1);
+		drawSemiSphere(1.1, mat_diffuse_white);
+	glPopMatrix();
+	// button
+	glPushMatrix();
+		glRotatef(90, 1, 0, 0);
+		glTranslatef(0, 0, 1);
+		drawCylinder(0.1, 0.4, mat_diffuse_black);
+		drawCylinder(0.15, 0.25, mat_diffuse_white);
+		drawCylinder(0.17, 0.2, mat_diffuse_white);
+	glPopMatrix();
+}
+
+void drawPuff() {
+	float mat_diffuse_jumpluff_cream[] = { 0.95f, 0.95f, 0.75f, 1.0f };
+	glPushMatrix();
+		glTranslatef(0, 0.65, 0);
+		glRotatef(270, 1, 0, 0);
+		drawCylinder(0.5, 0.04, mat_diffuse_jumpluff_cream);
+		glTranslatef(0, 0, 0.8);
+		drawSphere(0.5, mat_diffuse_jumpluff_cream);
+		for (int i = 0; i < 700; i++) {
+			glPushMatrix();
+			glRotatef(rand() % 360, 1, 0, 0);
+			glRotatef(rand() % 360, 0, 1, 0);
+			glRotatef(rand() % 360, 0, 0, 1);
+			
+			glTranslatef(0, 0.45, 0);
+			glRotatef(270, 1, 0, 0);
+			drawCylinder(0.1, 0.005, mat_diffuse_jumpluff_cream);
+			glPopMatrix();
+		}
+	glPopMatrix();
+}
+
+void drawJumpluff() {
+	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+	float mat_diffuse_jumpluff_blue[] = { 0.45f, 0.55f, 0.85f, 1.0f };
+
+	// main body
+	drawSphere(0.7, mat_diffuse_jumpluff_blue);
+	// draw left leg
+	glPushMatrix();
+		glRotatef(140, 1, 0, 0); // up down
+		glRotatef(30, 0, 0, 1); // left right
+		glRotatef(25, 0, 1, 0);
+		glTranslatef(0, 0.71, 0);
+		drawEllipsoid(0.1, 0.1, 0.15, mat_diffuse_jumpluff_blue);
+	glPopMatrix();
+	// draw right leg
+	glPushMatrix();
+		glRotatef(140, 1, 0, 0);
+		glRotatef(-30, 0, 0, 1);
+		glRotatef(-25, 0, 1, 0);
+		glTranslatef(0, 0.71, 0);
+		drawEllipsoid(0.1, 0.1, 0.15, mat_diffuse_jumpluff_blue);
+	glPopMatrix();
+	// draw tail
+	glPushMatrix();
+		//glRotatef(70, 1, 0, 0);
+		glRotatef(180, 0, 0, 1);
+		glTranslatef(0, 0.71, 0);
+		drawSphere(0.2, mat_diffuse_jumpluff_blue);
+	glPopMatrix();
+	// draw left eye
+	glPushMatrix();
+		glRotatef(60, 1, 0, 0);
+		glRotatef(15, 0, 0, 1);
+		glTranslatef(0, 0.7, 0);
+		drawSphere(0.05, mat_diffuse_red);
+	glPopMatrix();
+	// draw right eye
+	glPushMatrix();
+		glRotatef(60, 1, 0, 0);
+		glRotatef(-15, 0, 0, 1);
+		glTranslatef(0, 0.7, 0);
+		drawSphere(0.05, mat_diffuse_red);
+	glPopMatrix();
+	// draw puff
+	glPushMatrix();
+		drawPuff();
+		// draw left puff
+		glPushMatrix();
+		glRotatef(70, 0, 0, 1); 
+		drawPuff();
+		glPopMatrix();
+		// draw right puff
+		glPushMatrix();
+		glRotatef(-70, 0, 0, 1);
+		drawPuff();
+		glPopMatrix();
+	glPopMatrix();
 }
 
 void display(void) {
@@ -338,20 +442,20 @@ void display(void) {
 
 	glScalef(zoom, zoom, zoom);
 
+	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+
 	switch (current_object) {
 	case 0:
-		drawSphere(1);
+		drawSphere(1, mat_diffuse_red);
 		break;
 	case 1:
-		//drawEllipsoid(2, 1.5, 1);
-		//drawCylinder(2, 1);
-		drawSemiSphere(1);
+		drawEllipsoid(2, 1.5, 1, mat_diffuse_red);
 		break;
 	case 2:
-		// draw your first composite object here
+		drawPokeball();
 		break;
 	case 3:
-		// draw your second composite object here
+		drawJumpluff();
 		break;
 	default:
 		break;
