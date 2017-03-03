@@ -269,8 +269,8 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 			// x = r*cos(theta)
 			// y = r*sin(theta)
 			// z = z
-			// and 0 <= u <= h, is our (i / n * h)
-			// where 0 <= theta < 2*PI, is our (j*M_PI / n)	
+			// where 0 <= u <= h, is our (i / n * h)
+			// and 0 <= theta < 2*PI, is our (j*M_PI / n)	
 			glNormal3d(cos(j*M_PI / n), sin(j*M_PI / n), 0);
 			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), 0);
 
@@ -322,6 +322,126 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 	glPopMatrix();
 }
 
+void drawTorus(double a, double c, float mat_diffuse[]) {
+	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
+	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float no_shininess = 0.0f;
+	float shininess = 100.0f;
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+
+	if (m_Highlight)
+	{
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+	}
+	else {
+		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
+	}
+
+	int i, j;
+	int n = 20;
+	for (i = 0; i < 2 * n; i++) {
+		for (j = 0; j < 2 * n; j++) {
+			if (m_Smooth) {
+				glBegin(GL_POLYGON);
+
+				// from http://mathworld.wolfram.com/Torus.html
+				// x = [c + a * cos(v)] * cos(u)
+				// y = [c + a * cos(v)] * sin(u)
+				// z = a * sin(v)
+				// where a is the radius of the tube and c is the radius of the hole
+				// and 0 <= u, v < 2*PI, is our (i*M_PI / n) and (j*M_PI / n)
+				glNormal3d((cos(j*M_PI / n) * cos(i*M_PI / n)), (cos(j*M_PI / n) * sin(i*M_PI / n)), (sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
+
+				glNormal3d((cos(j*M_PI / n) * cos((i + 1)*M_PI / n)), (cos(j*M_PI / n) * sin((i + 1)*M_PI / n)), (sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin(j*M_PI / n)));
+
+				glNormal3d((cos((j + 1)*M_PI / n) * cos((i + 1)*M_PI / n)), (cos((j + 1)*M_PI / n) * sin((i + 1)*M_PI / n)), (sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+
+				glNormal3d((cos((j + 1)*M_PI / n) * cos(i*M_PI / n)), (cos((j + 1)*M_PI / n) * sin(i*M_PI / n)), (sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glEnd();
+			}
+			else {
+				glBegin(GL_POLYGON);
+				glNormal3d((cos((j+0.5)*M_PI / n) * cos((i + 0.5)*M_PI / n)), (cos((j + 0.5)*M_PI / n) * sin((i+0.5)*M_PI / n)), (sin((j + 0.5)*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glEnd();
+			}
+		}
+	}
+}
+
+void drawHalfTorus(double a, double c, float mat_diffuse[]) {
+	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
+	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float no_shininess = 0.0f;
+	float shininess = 100.0f;
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+
+	if (m_Highlight)
+	{
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+	}
+	else {
+		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
+	}
+
+	int i, j;
+	int n = 20;
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < 2 * n; j++) {
+			if (m_Smooth) {
+				glBegin(GL_POLYGON);
+
+				// from http://mathworld.wolfram.com/Torus.html
+				// x = [c + a * cos(v)] * cos(u)
+				// y = [c + a * cos(v)] * sin(u)
+				// z = a * sin(v)
+				// where a is the radius of the tube and c is the radius of the hole
+				// and 0 <= u, v < 2*PI, is our (i*M_PI / n) and (j*M_PI / n)
+				glNormal3d((cos(j*M_PI / n) * cos(i*M_PI / n)), (cos(j*M_PI / n) * sin(i*M_PI / n)), (sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
+
+				glNormal3d((cos(j*M_PI / n) * cos((i + 1)*M_PI / n)), (cos(j*M_PI / n) * sin((i + 1)*M_PI / n)), (sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin(j*M_PI / n)));
+
+				glNormal3d((cos((j + 1)*M_PI / n) * cos((i + 1)*M_PI / n)), (cos((j + 1)*M_PI / n) * sin((i + 1)*M_PI / n)), (sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+
+				glNormal3d((cos((j + 1)*M_PI / n) * cos(i*M_PI / n)), (cos((j + 1)*M_PI / n) * sin(i*M_PI / n)), (sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glEnd();
+			}
+			else {
+				glBegin(GL_POLYGON);
+				glNormal3d((cos((j + 0.5)*M_PI / n) * cos((i + 0.5)*M_PI / n)), (cos((j + 0.5)*M_PI / n) * sin((i + 0.5)*M_PI / n)), (sin((j + 0.5)*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos(j*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin(j*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
+				glEnd();
+			}
+		}
+	}
+}
+
 void drawPokeball() {
 	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_diffuse_black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -348,8 +468,7 @@ void drawPokeball() {
 	glPopMatrix();
 }
 
-void drawPuff() {
-	float mat_diffuse_jumpluff_cream[] = { 0.95f, 0.95f, 0.75f, 1.0f };
+void drawPuff(float mat_diffuse_jumpluff_cream[]) {
 	glPushMatrix();
 		glTranslatef(0, 0.65, 0);
 		glRotatef(270, 1, 0, 0);
@@ -371,8 +490,10 @@ void drawPuff() {
 }
 
 void drawJumpluff() {
+	float mat_diffuse_black[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_diffuse_jumpluff_blue[] = { 0.45f, 0.55f, 0.85f, 1.0f };
+	float mat_diffuse_jumpluff_cream[] = { 0.95f, 0.95f, 0.75f, 1.0f };
 
 	// main body
 	drawSphere(0.7, mat_diffuse_jumpluff_blue);
@@ -394,7 +515,7 @@ void drawJumpluff() {
 	glPopMatrix();
 	// draw tail
 	glPushMatrix();
-		//glRotatef(70, 1, 0, 0);
+		glRotatef(70, 1, 0, 0);
 		glRotatef(180, 0, 0, 1);
 		glTranslatef(0, 0.71, 0);
 		drawSphere(0.2, mat_diffuse_jumpluff_blue);
@@ -413,18 +534,25 @@ void drawJumpluff() {
 		glTranslatef(0, 0.7, 0);
 		drawSphere(0.05, mat_diffuse_red);
 	glPopMatrix();
+	// draw mouth
+	glPushMatrix();
+		glRotatef(65, 1, 0, 0);
+		glTranslatef(0, 0.7, 0);
+		glRotatef(90, 1, 0, 0);
+		drawHalfTorus(0.01, 0.05, mat_diffuse_black);
+	glPopMatrix();
 	// draw puff
 	glPushMatrix();
-		drawPuff();
+		drawPuff(mat_diffuse_jumpluff_cream);
 		// draw left puff
 		glPushMatrix();
-		glRotatef(70, 0, 0, 1); 
-		drawPuff();
+			glRotatef(70, 0, 0, 1); 
+			drawPuff(mat_diffuse_jumpluff_cream);
 		glPopMatrix();
 		// draw right puff
 		glPushMatrix();
-		glRotatef(-70, 0, 0, 1);
-		drawPuff();
+			glRotatef(-70, 0, 0, 1);
+			drawPuff(mat_diffuse_jumpluff_cream);
 		glPopMatrix();
 	glPopMatrix();
 }
@@ -449,7 +577,7 @@ void display(void) {
 		drawSphere(1, mat_diffuse_red);
 		break;
 	case 1:
-		drawEllipsoid(2, 1.5, 1, mat_diffuse_red);
+		drawTorus(0.5, 1, mat_diffuse_red);
 		break;
 	case 2:
 		drawPokeball();
