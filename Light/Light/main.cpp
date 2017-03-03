@@ -92,8 +92,6 @@ void drawSphere(double r) {
 				// x = r*cos(theta)*sin(phi)
 				// y = r*sin(theta)*sin(phi)
 				// z = r*cos(phi)
-				// where theta is our (i*M_PI / n)
-				// and phi is our (j*M_PI / n)
 				glNormal3d(sin(i*M_PI / n)*cos(j*M_PI / n), cos(i*M_PI / n)*cos(j*M_PI / n), sin(j*M_PI / n));
 				glVertex3d(r*sin(i*M_PI / n)*cos(j*M_PI / n), r*cos(i*M_PI / n)*cos(j*M_PI / n), r*sin(j*M_PI / n));
 
@@ -181,6 +179,69 @@ void drawCone(double h, double r) {
 	}
 }
 
+void drawEllipsoid(double a, double b, double c) {
+	float no_mat[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+	float mat_ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };
+	float mat_diffuse[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+	float mat_emission[] = { 0.3f, 0.2f, 0.2f, 0.0f };
+	float mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	float no_shininess = 0.0f;
+	float shininess = 100.0f;
+	glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
+
+	if (m_Highlight)
+	{
+		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+	}
+	else {
+		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
+		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
+	}
+
+	int i, j;
+	int n = 20;
+	for (i = 0; i < n; i++) {
+		for (j = 0; j < 2 * n; j++) {
+			if (m_Smooth) {
+				glBegin(GL_POLYGON);
+
+				// from http://mathworld.wolfram.com/Ellipsoid.html
+				// x = a*cos(u)*sin(v)
+				// y = b*sin(u)*sin(v)
+				// z = c*cos(v)
+				// where 0 <= v <= PI, is our (i*M_PI / n)
+				// and 0 <= u <= 2*PI, is our (j*M_PI / n)
+				glNormal3d(cos(j*M_PI / n)*sin(i*M_PI / n), sin(j*M_PI / n)*sin(i*M_PI / n), cos(i*M_PI / n));
+				glVertex3d(a*cos(j*M_PI / n)*sin(i*M_PI / n), b*sin(j*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
+
+				glNormal3d(cos(j*M_PI / n)*sin((i + 1)*M_PI / n), sin(j*M_PI / n)*sin((i + 1)*M_PI / n), cos((i + 1)*M_PI / n));
+				glVertex3d(a*cos(j*M_PI / n)*sin((i + 1)*M_PI / n), b*sin(j*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
+
+				glNormal3d(cos((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), sin((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), cos((i + 1)*M_PI / n));
+				glVertex3d(a*cos((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), b*sin((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
+
+				glNormal3d(cos((j + 1)*M_PI / n)*sin(i*M_PI / n), sin((j + 1)*M_PI / n)*sin(i*M_PI / n), cos(i*M_PI / n));
+				glVertex3d(a*cos((j + 1)*M_PI / n)*sin(i*M_PI / n), b*sin((j + 1)*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
+				glEnd();
+			}
+			else {
+				glBegin(GL_POLYGON);
+				// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
+				glNormal3d(cos((j+0.5)*M_PI / n)*sin((i+0.5)*M_PI / n), sin((j+0.5)*M_PI / n)*sin((i+0.5)*M_PI / n), cos((i+0.5)*M_PI / n));
+				glVertex3d(a*cos(j*M_PI / n)*sin(i*M_PI / n), b*sin(j*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
+				glVertex3d(a*cos(j*M_PI / n)*sin((i + 1)*M_PI / n), b*sin(j*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
+				glVertex3d(a*cos((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), b*sin((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
+				glVertex3d(a*cos((j + 1)*M_PI / n)*sin(i*M_PI / n), b*sin((j + 1)*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
+				glEnd();
+			}
+		}
+	}
+}
+
+
 void display(void) {
 	//Add Projection tool and Camera Movement somewhere here
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -199,7 +260,8 @@ void display(void) {
 		drawSphere(1);
 		break;
 	case 1:
-		drawCone(2, 1);
+		//drawCone(2, 1);
+		drawEllipsoid(2, 1.5, 1);
 		break;
 	case 2:
 		// draw your first composite object here
