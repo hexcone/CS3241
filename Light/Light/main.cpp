@@ -21,6 +21,9 @@ GLfloat angle = 0;   /* in degrees */
 GLfloat angle2 = 0;   /* in degrees */
 GLfloat zoom = 1.0;
 GLfloat field_of_view = 40.0;
+GLfloat aspect_ratio = 1.0;
+GLfloat z_near = 1.0;
+GLfloat z_far = 80.0;
 GLfloat x_translation = 0.0;
 
 int mouseButton = 0;
@@ -583,6 +586,15 @@ void drawJumpluff() {
 
 void display(void) {
 	//Add Projection tool and Camera Movement somewhere here
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(field_of_view,
+		aspect_ratio,
+		z_near, z_far);
+	glMatrixMode(GL_MODELVIEW);
+	int upVector = 1;
+	gluLookAt(1, 1, 1, 1, 1, -1, 0, 1, 0);
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -670,27 +682,39 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 'n':
-		// -Insert code to adjust Near-
+		z_near-=0.1;
+		if (z_near <= 0) {
+			z_near = 0.1;
+		}
 		break;
 
 	case 'N':
-		// -Insert code to adjust Near-
+		z_near += 0.1;
 		break;
 
 	case 'f':
-		// -Insert code to adjust Far-
+		z_far -= 0.1;
+		if (z_far <= 0) {
+			z_far = 0.1;
+		}
 		break;
 
 	case 'F':
-		// -Insert code to adjust Far-
+		z_far += 0.1;
 		break;
 
 	case 'o':
-		// -Insert code to adjust Fovy-
+		field_of_view-=10;
+		if (field_of_view == -10) {
+			field_of_view = 350;
+		}
 		break;
 
 	case 'O':
-		// -Insert code to adjust Fovy-
+		field_of_view += 10;
+		if (field_of_view == 360) {
+			field_of_view = 0;
+		}
 		break;
 
 	case 'r':
@@ -786,14 +810,7 @@ int main(int argc, char **argv) {
 
 	//REMOVE FROM THIS SECTION
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective( /* field of view in degree */ 40.0,
-		/* aspect ratio */ 1.0,
-		/* Z near */ 1.0, /* Z far */ 80.0);
-	glMatrixMode(GL_MODELVIEW);
-	int upVector = 1;
-	gluLookAt(1, 1, 1, 1, 1, -1, 0, 1, 0);
+	
 	//TO THIS SECTION, after implementation of Projection and Camera movement tools
 	//Hint: Transfer these functions over into void display(void), then add other variables
 
