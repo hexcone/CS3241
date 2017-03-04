@@ -15,16 +15,43 @@
 
 // global variable
 
+#define DEFAULT_ANGLE 0;
+#define DEFAULT_ANGLE2 0;
+#define DEFAULT_ZOOM 1.0;
+#define DEFAULT_FIELD_OF_VIEW 40.0;
+#define DEFAULT_ASPECT_RATIO 1.0;
+#define DEFAULT_Z_NEAR 1.0;
+#define DEFAULT_Z_FAR 80.0;
+#define DEFAULT_X_TRANSLATION 0.0;
+#define DEFAULT_EYEX 0.0;
+#define DEFAULT_EYEY 0.0;
+#define DEFAULT_EYEZ 0.0;
+#define DEFAULT_CENTERX 0.0;
+#define DEFAULT_CENTERY 0.0;
+#define DEFAULT_CENTERZ -1.0;
+#define DEFAULT_UPX 0.0;
+#define DEFAULT_UPY 1.0;
+#define DEFAULT_UPZ 0.0;
+
 bool m_Smooth = false;
 bool m_Highlight = false;
-GLfloat angle = 0;   /* in degrees */
-GLfloat angle2 = 0;   /* in degrees */
-GLfloat zoom = 1.0;
-GLfloat field_of_view = 40.0;
-GLfloat aspect_ratio = 1.0;
-GLfloat z_near = 1.0;
-GLfloat z_far = 80.0;
-GLfloat x_translation = 0.0;
+GLfloat angle = DEFAULT_ANGLE;   /* in degrees */
+GLfloat angle2 = DEFAULT_ANGLE2;   /* in degrees */
+GLfloat zoom = DEFAULT_ZOOM;
+GLfloat field_of_view = DEFAULT_FIELD_OF_VIEW;
+GLfloat aspect_ratio = DEFAULT_ASPECT_RATIO;
+GLfloat z_near = DEFAULT_Z_NEAR;
+GLfloat z_far = DEFAULT_Z_FAR;
+GLfloat x_translation = DEFAULT_X_TRANSLATION;
+GLdouble eyex = DEFAULT_EYEX;
+GLdouble eyey = DEFAULT_EYEY;
+GLdouble eyez = DEFAULT_EYEZ;
+GLdouble centerx = DEFAULT_CENTERX;
+GLdouble centery = DEFAULT_CENTERY;
+GLdouble centerz = DEFAULT_CENTERZ;
+GLdouble upx = DEFAULT_UPX;
+GLdouble upy = DEFAULT_UPY;
+GLdouble upz = DEFAULT_UPZ;
 
 int mouseButton = 0;
 int moving, startx, starty;
@@ -585,15 +612,12 @@ void drawJumpluff() {
 }
 
 void display(void) {
-	//Add Projection tool and Camera Movement somewhere here
+	// Projection tool
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(field_of_view,
 		aspect_ratio,
 		z_near, z_far);
-	glMatrixMode(GL_MODELVIEW);
-	int upVector = 1;
-	gluLookAt(1, 1, 1, 1, 1, -1, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -603,6 +627,9 @@ void display(void) {
 	glTranslatef(0, 0, -6);
 	glRotatef(angle2, 1.0, 0.0, 0.0);
 	glRotatef(angle, 0.0, 1.0, 0.0);
+
+	// Camera movement
+	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
 
 	glScalef(zoom, zoom, zoom);
 
@@ -629,7 +656,24 @@ void display(void) {
 }
 
 
-void resetCamera() {
+void resetCamera() { 
+	angle = DEFAULT_ANGLE;
+	angle2 = DEFAULT_ANGLE2;
+	zoom = DEFAULT_ZOOM;
+	field_of_view = DEFAULT_FIELD_OF_VIEW;
+	aspect_ratio = DEFAULT_ASPECT_RATIO;
+	z_near = DEFAULT_Z_NEAR;
+	z_far = DEFAULT_Z_FAR;
+	x_translation = DEFAULT_X_TRANSLATION;
+	eyex = DEFAULT_EYEX;
+	eyey = DEFAULT_EYEY;
+	eyez = DEFAULT_EYEZ;
+	centerx = DEFAULT_CENTERX;
+	centery = DEFAULT_CENTERY;
+	centerz = DEFAULT_CENTERZ;
+	upx = DEFAULT_UPX;
+	upy = DEFAULT_UPY;
+	upz = DEFAULT_UPZ;
 	/*
 	//fill in values below.
 	zoom =
@@ -644,16 +688,29 @@ void resetCamera() {
 }
 
 void setCameraBestAngle() {
-	/*
-	//fill in values below
-	zoom =
-	angle =
-	angle2 =
-	zoom =
-	field_of_view =
-	x_translation =
-	//TIPS: Adjust gluLookAt function to change camera position
-	*/
+	switch (current_object) {
+	case 0:
+		resetCamera();
+		break;
+	case 1:
+		resetCamera();
+		angle = -30;
+		angle2 = -40;
+		break;
+	case 2:
+		resetCamera();
+		angle = 0;
+		angle2 = -90;
+		upx = -0.2;
+		break;
+	case 3:
+		resetCamera();
+		eyex = 0.2;
+		eyey = 0.6;
+		centerx = -0.2;
+		centery = 0.5;
+		break;
+	}
 	return;
 }
 
@@ -730,6 +787,7 @@ void keyboard(unsigned char key, int x, int y) {
 	case '3':
 	case '4':
 		current_object = key - '1';
+		resetCamera();
 		break;
 
 	case 27:
@@ -807,12 +865,6 @@ int main(int argc, char **argv) {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
-
-	//REMOVE FROM THIS SECTION
-
-	
-	//TO THIS SECTION, after implementation of Projection and Camera movement tools
-	//Hint: Transfer these functions over into void display(void), then add other variables
 
 	glutMainLoop();
 
