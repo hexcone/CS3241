@@ -35,6 +35,8 @@
 
 bool m_Smooth = false;
 bool m_Highlight = false;
+bool animate_camera = false;
+bool disco_light = false;
 GLfloat angle = DEFAULT_ANGLE;   /* in degrees */
 GLfloat angle2 = DEFAULT_ANGLE2;   /* in degrees */
 GLfloat zoom = DEFAULT_ZOOM;
@@ -71,6 +73,31 @@ void setupLighting() {
 	GLfloat	specularProperties[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	GLfloat lightPosition[] = { -100.0f, 100.0f, 100.0f, 1.0f };
 
+	if (disco_light) {
+		int value = fmod((glutGet(GLUT_ELAPSED_TIME) * 0.3), 768);
+		GLfloat r = 0, g = 0 , b = 0;
+		if (value < 256) {
+			r = value;
+			g = 255 - value;
+			b = 255;
+		} else if (value < 512) {
+			value = value - 256;
+			r = 255;
+			g = value;
+			b = 255 - value;
+		} else if (value < 768) {
+			value = value - 512;
+			r = 255 - value;
+			g = 255;
+			b = value;
+		}
+		cout << "value: " << value << "\n";
+		GLfloat	newSpecularProperties[] = { r / 255.0, g / 255.0, b / 255.0, 1.0f };
+		for (int i = 0; i < 4; i++) {
+			specularProperties[i] = newSpecularProperties[i];
+		}
+	}
+
 	glClearDepth(1.0);
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientProperties);
@@ -83,7 +110,6 @@ void setupLighting() {
 	// Default : lighting
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHTING);
-
 }
 
 void drawSphere(double r, float mat_diffuse[]) {
@@ -612,18 +638,25 @@ void display(void) {
 	glRotatef(angle, 0.0, 1.0, 0.0);
 
 	// Camera movement
-	gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+	if (animate_camera) {
+		double angle = fmod((glutGet(GLUT_ELAPSED_TIME) * 0.001), 360);
+		double x = cos(angle);
+		double y = sin(angle);
+		gluLookAt(x, y, eyez, centerx, centery, centerz, upx, upy, upz);
+	} else {
+		gluLookAt(eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz);
+	}
 
 	glScalef(zoom, zoom, zoom);
 
-	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
+	float mat_diffuse_black[] = { 0.1f, 0.1f, 0.1f, 1.0f };
 
 	switch (current_object) {
 	case 0:
-		drawSphere(1, mat_diffuse_red);
+		drawSphere(1, mat_diffuse_black);
 		break;
 	case 1:
-		drawTorus(0.5, 1, mat_diffuse_red);
+		drawTorus(0.5, 1, mat_diffuse_black);
 		break;
 	case 2:
 		drawPokeball();
@@ -636,6 +669,8 @@ void display(void) {
 	};
 	glPopMatrix();
 	glutSwapBuffers();
+
+	setupLighting();
 }
 
 void resetCamera() {
@@ -656,27 +691,25 @@ void resetCamera() {
 	upx = DEFAULT_UPX;
 	upy = DEFAULT_UPY;
 	upz = DEFAULT_UPZ;
+	animate_camera = false;
+	disco_light = false;
 	return;
 }
 
 void setCameraBestAngle() {
 	switch (current_object) {
 	case 0:
-		resetCamera();
 		break;
 	case 1:
-		resetCamera();
 		angle = -30;
 		angle2 = -40;
 		break;
 	case 2:
-		resetCamera();
 		angle = 0;
 		angle2 = -90;
 		upx = -0.2;
 		break;
 	case 3:
-		resetCamera();
 		eyex = 0.2;
 		eyey = 0.6;
 		centerx = -0.2;
@@ -751,15 +784,26 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 'R':
+		resetCamera();
 		setCameraBestAngle();
+		break;
+
+	case 'c':
+	case 'C':
+		animate_camera = !animate_camera;
+		break;
+
+	case 'd':
+	case 'D':
+		disco_light = !disco_light;
 		break;
 
 	case '1':
 	case '2':
 	case '3':
 	case '4':
-		current_object = key - '1';
 		resetCamera();
+		current_object = key - '1';
 		break;
 
 	case 27:
@@ -814,6 +858,8 @@ int main(int argc, char **argv) {
 	cout << "o, O: Reduce or increase the distance of the povy plane from the camera" << endl;
 	cout << "r: Reset camera to the initial parameters when the program starts" << endl;
 	cout << "R: Change camera to another setting that is has the best viewing angle for your object" << endl;
+	cout << "C: Animate camera" << endl;
+	cout << "D: Disco lights" << endl;
 	cout << "ESC: Quit" << endl << endl;
 
 	cout << "Left mouse click and drag: rotate the object" << endl;
@@ -826,11 +872,12 @@ int main(int argc, char **argv) {
 	glutCreateWindow("CS3241 Assignment 3");
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glutDisplayFunc(display);
+	glutIdleFunc(display);
 	glMatrixMode(GL_PROJECTION);
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
-	setupLighting();
+//	setupLighting();
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
