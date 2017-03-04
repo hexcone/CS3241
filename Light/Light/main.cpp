@@ -91,7 +91,6 @@ void setupLighting() {
 			g = 255;
 			b = value;
 		}
-		cout << "value: " << value << "\n";
 		GLfloat	newSpecularProperties[] = { r / 255.0, g / 255.0, b / 255.0, 1.0f };
 		for (int i = 0; i < 4; i++) {
 			specularProperties[i] = newSpecularProperties[i];
@@ -877,7 +876,6 @@ int main(int argc, char **argv) {
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
-//	setupLighting();
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
