@@ -468,20 +468,20 @@ void drawPokeball() {
 	glPopMatrix();
 }
 
-void drawPuff(float mat_diffuse_jumpluff_cream[]) {
+void drawPuff(float mat_diffuse_jumpluff_stalk_color[], float mat_diffuse_jumpluff_cream[], float puff_size) {
 	glPushMatrix();
 		glTranslatef(0, 0.65, 0);
 		glRotatef(270, 1, 0, 0);
-		drawCylinder(0.5, 0.04, mat_diffuse_jumpluff_cream);
+		drawCylinder(0.5, 0.04, mat_diffuse_jumpluff_stalk_color);
 		glTranslatef(0, 0, 0.8);
-		drawSphere(0.5, mat_diffuse_jumpluff_cream);
+		drawSphere(puff_size, mat_diffuse_jumpluff_cream);
 		for (int i = 0; i < 700; i++) {
 			glPushMatrix();
 			glRotatef(rand() % 360, 1, 0, 0);
 			glRotatef(rand() % 360, 0, 1, 0);
 			glRotatef(rand() % 360, 0, 0, 1);
 			
-			glTranslatef(0, 0.45, 0);
+			glTranslatef(0, puff_size - 0.05, 0);
 			glRotatef(270, 1, 0, 0);
 			drawCylinder(0.1, 0.005, mat_diffuse_jumpluff_cream);
 			glPopMatrix();
@@ -494,6 +494,7 @@ void drawJumpluff() {
 	float mat_diffuse_red[] = { 0.8f, 0.1f, 0.1f, 1.0f };
 	float mat_diffuse_jumpluff_blue[] = { 0.45f, 0.55f, 0.85f, 1.0f };
 	float mat_diffuse_jumpluff_cream[] = { 0.95f, 0.95f, 0.75f, 1.0f };
+	float mat_diffuse_jumpluff_green[] = { 0.6f, 0.8f, 0.25f, 1.0f };
 
 	// main body
 	drawSphere(0.7, mat_diffuse_jumpluff_blue);
@@ -541,18 +542,41 @@ void drawJumpluff() {
 		glRotatef(90, 1, 0, 0);
 		drawHalfTorus(0.01, 0.05, mat_diffuse_black);
 	glPopMatrix();
+	// draw leaf
+	glPushMatrix();
+		glPushMatrix();
+			glRotatef(-6, 1, 0, 0);
+			glTranslatef(0, 0.77, 0);
+			glRotatef(60, 1, 0, 0);
+			drawEllipsoid(0.05, 0.03, 0.1, mat_diffuse_jumpluff_green);
+		glPopMatrix();
+		glPushMatrix();
+			glRotatef(130, 0, 1, 0);
+			glRotatef(-6, 1, 0, 0);
+			glTranslatef(0, 0.77, 0);
+			glRotatef(60, 1, 0, 0);
+			drawEllipsoid(0.05, 0.03, 0.1, mat_diffuse_jumpluff_green);
+		glPopMatrix();
+		glPushMatrix();
+			glRotatef(230, 0, 1, 0);
+			glRotatef(-6, 1, 0, 0);
+			glTranslatef(0, 0.77, 0);
+			glRotatef(60, 1, 0, 0);
+			drawEllipsoid(0.05, 0.03, 0.1, mat_diffuse_jumpluff_green);
+		glPopMatrix();
+	glPopMatrix();
 	// draw puff
 	glPushMatrix();
-		drawPuff(mat_diffuse_jumpluff_cream);
+		drawPuff(mat_diffuse_jumpluff_cream, mat_diffuse_jumpluff_cream, 0.5);
 		// draw left puff
 		glPushMatrix();
 			glRotatef(70, 0, 0, 1); 
-			drawPuff(mat_diffuse_jumpluff_cream);
+			drawPuff(mat_diffuse_jumpluff_blue, mat_diffuse_jumpluff_cream, 0.45);
 		glPopMatrix();
 		// draw right puff
 		glPushMatrix();
 			glRotatef(-70, 0, 0, 1);
-			drawPuff(mat_diffuse_jumpluff_cream);
+			drawPuff(mat_diffuse_jumpluff_blue, mat_diffuse_jumpluff_cream, 0.45);
 		glPopMatrix();
 	glPopMatrix();
 }
