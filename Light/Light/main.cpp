@@ -97,12 +97,10 @@ void drawSphere(double r, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -157,12 +155,10 @@ void drawSemiSphere(double r, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -192,8 +188,7 @@ void drawSemiSphere(double r, float mat_diffuse[]) {
 				glNormal3d(sin(i*M_PI / n)*cos((j + 1)*M_PI / n), cos(i*M_PI / n)*cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n));
 				glVertex3d(r*sin(i*M_PI / n)*cos((j + 1)*M_PI / n), r*cos(i*M_PI / n)*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n));
 				glEnd();
-			}
-			else {
+			} else {
 				glBegin(GL_POLYGON);
 				// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
 				glNormal3d(sin((i + 0.5)*M_PI / n)*cos((j + 0.5)*M_PI / n), cos((i + 0.5)*M_PI / n)*cos((j + 0.5)*M_PI / n), sin((j + 0.5)*M_PI / n));
@@ -218,12 +213,10 @@ void drawEllipsoid(double a, double b, double c, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -253,11 +246,10 @@ void drawEllipsoid(double a, double b, double c, float mat_diffuse[]) {
 				glNormal3d(cos((j + 1)*M_PI / n)*sin(i*M_PI / n), sin((j + 1)*M_PI / n)*sin(i*M_PI / n), cos(i*M_PI / n));
 				glVertex3d(a*cos((j + 1)*M_PI / n)*sin(i*M_PI / n), b*sin((j + 1)*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
 				glEnd();
-			}
-			else {
+			} else {
 				glBegin(GL_POLYGON);
 				// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
-				glNormal3d(cos((j+0.5)*M_PI / n)*sin((i+0.5)*M_PI / n), sin((j+0.5)*M_PI / n)*sin((i+0.5)*M_PI / n), cos((i+0.5)*M_PI / n));
+				glNormal3d(cos((j + 0.5)*M_PI / n)*sin((i + 0.5)*M_PI / n), sin((j + 0.5)*M_PI / n)*sin((i + 0.5)*M_PI / n), cos((i + 0.5)*M_PI / n));
 				glVertex3d(a*cos(j*M_PI / n)*sin(i*M_PI / n), b*sin(j*M_PI / n)*sin(i*M_PI / n), c*cos(i*M_PI / n));
 				glVertex3d(a*cos(j*M_PI / n)*sin((i + 1)*M_PI / n), b*sin(j*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
 				glVertex3d(a*cos((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), b*sin((j + 1)*M_PI / n)*sin((i + 1)*M_PI / n), c*cos((i + 1)*M_PI / n));
@@ -279,12 +271,10 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -313,11 +303,10 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 			glNormal3d(cos((j + 1)*M_PI / n), sin((j + 1)*M_PI / n), 0);
 			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), 0);
 			glEnd();
-		}
-		else {
+		} else {
 			glBegin(GL_POLYGON);
 			// Explanation: the normal of the whole polygon is the coordinate of the center of the polygon for a sphere
-			glNormal3d(cos((j+0.5)*M_PI / n), sin((j+0.5)*M_PI / n), h / 2);
+			glNormal3d(cos((j + 0.5)*M_PI / n), sin((j + 0.5)*M_PI / n), h / 2);
 			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), 0);
 			glVertex3d(r*cos(j*M_PI / n), r*sin(j*M_PI / n), h);
 			glVertex3d(r*cos((j + 1)*M_PI / n), r*sin((j + 1)*M_PI / n), h);
@@ -327,7 +316,7 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 	}
 
 	// draw lid
-	
+
 	glBegin(GL_POLYGON);
 	glNormal3d(0, 0, 1);
 	for (int i = 0; i < 360; i++)
@@ -338,17 +327,17 @@ void drawCylinder(double h, double r, float mat_diffuse[]) {
 	glEnd();
 
 	glPushMatrix();
-	glRotatef(180, 1, 0, 0);
-	glTranslatef(0, 0, -h);
-	// draw bottom
-	glBegin(GL_POLYGON);
-	glNormal3d(0, 0, 1);
-	for (int i = 0; i < 360; i++)
-	{
-		float rad = i*M_PI / 180;
-		glVertex3f(r * cos(rad), r* sin(rad), h);
-	}
-	glEnd();
+		glRotatef(180, 1, 0, 0);
+		glTranslatef(0, 0, -h);
+		// draw bottom
+		glBegin(GL_POLYGON);
+		glNormal3d(0, 0, 1);
+		for (int i = 0; i < 360; i++)
+		{
+			float rad = i*M_PI / 180;
+			glVertex3f(r * cos(rad), r* sin(rad), h);
+		}
+		glEnd();
 	glPopMatrix();
 }
 
@@ -363,12 +352,10 @@ void drawTorus(double a, double c, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -398,10 +385,9 @@ void drawTorus(double a, double c, float mat_diffuse[]) {
 				glNormal3d((cos((j + 1)*M_PI / n) * cos(i*M_PI / n)), (cos((j + 1)*M_PI / n) * sin(i*M_PI / n)), (sin((j + 1)*M_PI / n)));
 				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
 				glEnd();
-			}
-			else {
+			} else {
 				glBegin(GL_POLYGON);
-				glNormal3d((cos((j+0.5)*M_PI / n) * cos((i + 0.5)*M_PI / n)), (cos((j + 0.5)*M_PI / n) * sin((i+0.5)*M_PI / n)), (sin((j + 0.5)*M_PI / n)));
+				glNormal3d((cos((j + 0.5)*M_PI / n) * cos((i + 0.5)*M_PI / n)), (cos((j + 0.5)*M_PI / n) * sin((i + 0.5)*M_PI / n)), (sin((j + 0.5)*M_PI / n)));
 				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
 				glVertex3d(((c + a * cos(j*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin(j*M_PI / n)));
 				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos((i + 1)*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin((i + 1)*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
@@ -423,12 +409,10 @@ void drawHalfTorus(double a, double c, float mat_diffuse[]) {
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_EMISSION, no_mat);
 
-	if (m_Highlight)
-	{
+	if (m_Highlight) {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
 		glMaterialf(GL_FRONT, GL_SHININESS, shininess);
-	}
-	else {
+	} else {
 		glMaterialfv(GL_FRONT, GL_SPECULAR, no_mat);
 		glMaterialf(GL_FRONT, GL_SHININESS, no_shininess);
 	}
@@ -458,8 +442,7 @@ void drawHalfTorus(double a, double c, float mat_diffuse[]) {
 				glNormal3d((cos((j + 1)*M_PI / n) * cos(i*M_PI / n)), (cos((j + 1)*M_PI / n) * sin(i*M_PI / n)), (sin((j + 1)*M_PI / n)));
 				glVertex3d(((c + a * cos((j + 1)*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos((j + 1)*M_PI / n)) * sin(i*M_PI / n)), (a * sin((j + 1)*M_PI / n)));
 				glEnd();
-			}
-			else {
+			} else {
 				glBegin(GL_POLYGON);
 				glNormal3d((cos((j + 0.5)*M_PI / n) * cos((i + 0.5)*M_PI / n)), (cos((j + 0.5)*M_PI / n) * sin((i + 0.5)*M_PI / n)), (sin((j + 0.5)*M_PI / n)));
 				glVertex3d(((c + a * cos(j*M_PI / n)) * cos(i*M_PI / n)), ((c + a * cos(j*M_PI / n)) * sin(i*M_PI / n)), (a * sin(j*M_PI / n)));
@@ -507,13 +490,13 @@ void drawPuff(float mat_diffuse_jumpluff_stalk_color[], float mat_diffuse_jumplu
 		drawSphere(puff_size, mat_diffuse_jumpluff_cream);
 		for (int i = 0; i < 700; i++) {
 			glPushMatrix();
-			glRotatef(rand() % 360, 1, 0, 0);
-			glRotatef(rand() % 360, 0, 1, 0);
-			glRotatef(rand() % 360, 0, 0, 1);
-			
-			glTranslatef(0, puff_size - 0.05, 0);
-			glRotatef(270, 1, 0, 0);
-			drawCylinder(0.1, 0.005, mat_diffuse_jumpluff_cream);
+				glRotatef(rand() % 360, 1, 0, 0);
+				glRotatef(rand() % 360, 0, 1, 0);
+				glRotatef(rand() % 360, 0, 0, 1);
+
+				glTranslatef(0, puff_size - 0.05, 0);
+				glRotatef(270, 1, 0, 0);
+				drawCylinder(0.1, 0.005, mat_diffuse_jumpluff_cream);
 			glPopMatrix();
 		}
 	glPopMatrix();
@@ -600,7 +583,7 @@ void drawJumpluff() {
 		drawPuff(mat_diffuse_jumpluff_cream, mat_diffuse_jumpluff_cream, 0.5);
 		// draw left puff
 		glPushMatrix();
-			glRotatef(70, 0, 0, 1); 
+			glRotatef(70, 0, 0, 1);
 			drawPuff(mat_diffuse_jumpluff_blue, mat_diffuse_jumpluff_cream, 0.45);
 		glPopMatrix();
 		// draw right puff
@@ -655,8 +638,7 @@ void display(void) {
 	glutSwapBuffers();
 }
 
-
-void resetCamera() { 
+void resetCamera() {
 	angle = DEFAULT_ANGLE;
 	angle2 = DEFAULT_ANGLE2;
 	zoom = DEFAULT_ZOOM;
@@ -674,16 +656,6 @@ void resetCamera() {
 	upx = DEFAULT_UPX;
 	upy = DEFAULT_UPY;
 	upz = DEFAULT_UPZ;
-	/*
-	//fill in values below.
-	zoom =
-	angle =
-	angle2 =
-	zoom =
-	field_of_view =
-	x_translation =
-	// include resetting of gluPerspective & gluLookAt.
-	*/
 	return;
 }
 
@@ -739,7 +711,7 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 'n':
-		z_near-=0.1;
+		z_near -= 0.1;
 		if (z_near <= 0) {
 			z_near = 0.1;
 		}
@@ -761,7 +733,7 @@ void keyboard(unsigned char key, int x, int y) {
 		break;
 
 	case 'o':
-		field_of_view-=10;
+		field_of_view -= 10;
 		if (field_of_view == -10) {
 			field_of_view = 350;
 		}
@@ -801,8 +773,6 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 
-
-
 void mouse(int button, int state, int x, int y) {
 	if (state == GLUT_DOWN) {
 		mouseButton = button;
@@ -821,14 +791,14 @@ void motion(int x, int y) {
 		if (mouseButton == GLUT_LEFT_BUTTON) {
 			angle = angle + (x - startx);
 			angle2 = angle2 + (y - starty);
+		} else {
+			zoom += ((y - starty)*0.01);
 		}
-		else zoom += ((y - starty)*0.01);
 		startx = x;
 		starty = y;
 		glutPostRedisplay();
 	}
 }
-
 
 int main(int argc, char **argv) {
 	cout << "CS3241 Lab 3" << endl << endl;
@@ -845,7 +815,6 @@ int main(int argc, char **argv) {
 	cout << "r: Reset camera to the initial parameters when the program starts" << endl;
 	cout << "R: Change camera to another setting that is has the best viewing angle for your object" << endl;
 	cout << "ESC: Quit" << endl << endl;
-
 
 	cout << "Left mouse click and drag: rotate the object" << endl;
 	cout << "Right mouse click and drag: zooming" << endl;
