@@ -120,6 +120,11 @@ void writeFile() {
 	file.close(); // is not necessary because the destructor closes the open file by default
 }
 
+void clearAllControlPoints() {
+	nPt = 0;
+	memset(&ptList[0], 0, sizeof(ptList)); // not necessary but let's just do it
+}
+
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
 		case 'r':
@@ -160,7 +165,7 @@ void keyboard(unsigned char key, int x, int y) {
 		case 'e':
 		case 'E':
 			// Do something to erase all the control points added
-
+			clearAllControlPoints();
 			break;
 
 		case 27:
