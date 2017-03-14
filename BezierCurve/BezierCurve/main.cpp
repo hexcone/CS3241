@@ -38,22 +38,31 @@ bool C1Continuity = false;
 void drawRightArrow() {
 	glColor3f(0, 1, 0);
 	glBegin(GL_LINE_STRIP);
-	glVertex2f(0, 0);
-	glVertex2f(100, 0);
-	glVertex2f(95, 5);
-	glVertex2f(100, 0);
-	glVertex2f(95, -5);
+		glVertex2f(0, 0);
+		glVertex2f(100, 0);
+		glVertex2f(95, 5);
+		glVertex2f(100, 0);
+		glVertex2f(95, -5);
 	glEnd();
+}
+
+void drawControlLines() {
+	glColor3f(0, 1, 0);
+	for (int i = 1; i < nPt; i++) {
+		glBegin(GL_LINES);
+			glVertex2f(ptList[i-1].x, ptList[i-1].y);
+			glVertex2f(ptList[i].x, ptList[i].y);
+		glEnd();
+	}
 }
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
 	if (displayControlPoints) {
-
 		glPointSize(5);
 		glBegin(GL_POINTS);
-		for (int i = 0; i<nPt; i++) {
+		for (int i = 0; i < nPt; i++) {
 			glColor3f(0, 0, 0);
 			glVertex2d(ptList[i].x, ptList[i].y);
 		}
@@ -62,7 +71,7 @@ void display(void) {
 	}
 
 	if (displayControlLines) {
-		glColor3f(0, 1, 0);
+		drawControlLines();
 	}
 
 	glPopMatrix();
@@ -76,7 +85,6 @@ void reshape(int w, int h) {
 	gluOrtho2D(0, w, h, 0);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 }
 
 void init(void) {
@@ -88,16 +96,16 @@ void readFile() {
 	file.open("savefile.txt");
 	file >> nPt;
 
-	if (nPt>MAXPTNO) {
+	if (nPt > MAXPTNO) {
 		cout << "Error: File contains more than the maximum number of points." << endl;
 		nPt = MAXPTNO;
 	}
 
-	for (int i = 0; i<nPt; i++) {
+	for (int i = 0; i < nPt; i++) {
 		file >> ptList[i].x;
 		file >> ptList[i].y;
 	}
-	file.close();// is not necessary because the destructor closes the open file by default
+	file.close(); // is not necessary because the destructor closes the open file by default
 }
 
 void writeFile() {
@@ -105,11 +113,11 @@ void writeFile() {
 	file.open("savefile.txt");
 	file << nPt << endl;
 
-	for (int i = 0; i<nPt; i++) {
+	for (int i = 0; i < nPt; i++) {
 		file << ptList[i].x << " ";
 		file << ptList[i].y << endl;
 	}
-	file.close();// is not necessary because the destructor closes the open file by default
+	file.close(); // is not necessary because the destructor closes the open file by default
 }
 
 void keyboard(unsigned char key, int x, int y) {
