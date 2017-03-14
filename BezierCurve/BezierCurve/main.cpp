@@ -56,9 +56,41 @@ void drawControlLines() {
 	}
 }
 
+void drawBezierCurve() {
+	Point p1, p2, p3, p4, p;
+	for (int i = 0; i < nPt; i += 3) {
+		if (i + 3 < nPt) {
+			p1 = ptList[i];
+			p2 = ptList[i + 1];
+			p3 = ptList[i + 2];
+			p4 = ptList[i + 3];
+
+			glLineWidth(1);
+			glColor3f(0, 0, 1);
+			glBegin(GL_LINE_STRIP);
+			for (double j = 0; j < NLINESEGMENT + 1; j++) {
+				double t = j / NLINESEGMENT;
+				p.x = pow((1 - t), 3) * p1.x +
+					pow((1 - t), 2) * t * 3 * p2.x +
+					(1 - t) * pow(t, 2) * 3 * p3.x +
+					pow(t, 3) * p4.x;
+				p.y = pow((1 - t), 3) * p1.y +
+					pow((1 - t), 2) * t * 3 * p2.y +
+					(1 - t) * pow(t, 2) * 3 * p3.y +
+					pow(t, 3) * p4.y;
+				glVertex2d(p.x, p.y);
+			}
+			glEnd();
+		}
+
+	}
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
+
+	// draw control points
 	if (displayControlPoints) {
 		glPointSize(5);
 		glBegin(GL_POINTS);
@@ -70,9 +102,13 @@ void display(void) {
 		glPointSize(1);
 	}
 
+	// draw control lines
 	if (displayControlLines) {
 		drawControlLines();
 	}
+
+	// draw bezier curve
+	drawBezierCurve();
 
 	glPopMatrix();
 	glutSwapBuffers();
