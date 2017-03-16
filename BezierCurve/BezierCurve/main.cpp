@@ -76,6 +76,34 @@ void drawRightArrow() {
 	glEnd();
 }
 
+void drawControlPoints() {
+	glPointSize(5);
+	glBegin(GL_POINTS);
+	for (int i = 0; i < nPt; i++) {
+		if (C1Continuity) {
+			if ((i > 3) && ((i + 2) % 3 == 0)) {
+				// red
+				glColor3f(1, 0, 0);
+				glVertex2d(c1List[i].x, c1List[i].y);
+				//grey
+				glColor3f(0.7, 0.7, 0.7);
+				glVertex2d(ptList[i].x, ptList[i].y);
+			} else {
+				// black
+				glColor3f(0, 0, 0);
+				glVertex2d(ptList[i].x, ptList[i].y);
+			}
+		}
+		else {
+			// all black
+			glColor3f(0, 0, 0);
+			glVertex2d(ptList[i].x, ptList[i].y);
+		}
+	}
+	glEnd();
+	glPointSize(1);
+}
+
 void drawControlLines() {
 	glColor3f(0, 1, 0);
 	for (int i = 1; i < nPt; i++) {
@@ -134,18 +162,7 @@ void display(void) {
 
 	// draw control points
 	if (displayControlPoints) {
-		glPointSize(5);
-		glBegin(GL_POINTS);
-		for (int i = 0; i < nPt; i++) {
-			glColor3f(0, 0, 0);
-			if (C1Continuity) {
-				glVertex2d(c1List[i].x, c1List[i].y);
-			} else {
-				glVertex2d(ptList[i].x, ptList[i].y);
-			}
-		}
-		glEnd();
-		glPointSize(1);
+		drawControlPoints();
 	}
 
 	// draw control lines
