@@ -27,6 +27,7 @@ struct Point {
 // Storage of control points
 int nPt = 0;
 Point ptList[MAXPTNO];
+Point c1List[MAXPTNO];
 
 // Display options
 bool displayControlPoints = true;
@@ -34,6 +35,35 @@ bool displayControlLines = true;
 bool displayTangentVectors = false;
 bool displayObjects = false;
 bool C1Continuity = false;
+
+void recomputeAllC1() {
+	for (int i = 0; i < nPt; i++) {
+		if ((i > 3) && ((i + 2) % 3 == 0)) {
+			Point p1, p2;
+			p1 = ptList[i - 1];
+			p2 = ptList[i - 2];
+			c1List[i].x = p1.x - (p2.x - p1.x);
+			c1List[i].y = p1.y - (p2.y - p1.y);
+		}
+		else {
+			c1List[i].x = ptList[i].x;
+			c1List[i].y = ptList[i].y;
+		}
+	}
+}
+
+void recomputeC1() {
+	if ((nPt > 4) && ((nPt + 1) % 3 == 0)) {
+		Point p1, p2;
+		p1 = ptList[nPt - 2];
+		p2 = ptList[nPt - 3];
+		c1List[nPt - 1].x = p1.x - (p2.x - p1.x);
+		c1List[nPt - 1].y = p1.y - (p2.y - p1.y);
+	} else {
+		c1List[nPt - 1].x = ptList[nPt - 1].x;
+		c1List[nPt - 1].y = ptList[nPt - 1].y;
+	}
+}
 
 void drawRightArrow() {
 	glColor3f(0, 1, 0);
@@ -50,8 +80,13 @@ void drawControlLines() {
 	glColor3f(0, 1, 0);
 	for (int i = 1; i < nPt; i++) {
 		glBegin(GL_LINES);
-			glVertex2f(ptList[i-1].x, ptList[i-1].y);
+		if (C1Continuity) {
+			glVertex2f(c1List[i - 1].x, c1List[i - 1].y);
+			glVertex2f(c1List[i].x, c1List[i].y);
+		} else {
+			glVertex2f(ptList[i - 1].x, ptList[i - 1].y);
 			glVertex2f(ptList[i].x, ptList[i].y);
+		}
 		glEnd();
 	}
 }
@@ -60,10 +95,17 @@ void drawBezierCurve() {
 	Point p1, p2, p3, p4, p;
 	for (int i = 0; i < nPt; i += 3) {
 		if (i + 3 < nPt) {
-			p1 = ptList[i];
-			p2 = ptList[i + 1];
-			p3 = ptList[i + 2];
-			p4 = ptList[i + 3];
+			if (C1Continuity) {
+				p1 = c1List[i];
+				p2 = c1List[i + 1];
+				p3 = c1List[i + 2];
+				p4 = c1List[i + 3];
+			} else {
+				p1 = ptList[i];
+				p2 = ptList[i + 1];
+				p3 = ptList[i + 2];
+				p4 = ptList[i + 3];
+			}
 
 			glLineWidth(1);
 			glColor3f(0, 0, 1);
@@ -96,7 +138,11 @@ void display(void) {
 		glBegin(GL_POINTS);
 		for (int i = 0; i < nPt; i++) {
 			glColor3f(0, 0, 0);
-			glVertex2d(ptList[i].x, ptList[i].y);
+			if (C1Continuity) {
+				glVertex2d(c1List[i].x, c1List[i].y);
+			} else {
+				glVertex2d(ptList[i].x, ptList[i].y);
+			}
 		}
 		glEnd();
 		glPointSize(1);
@@ -141,6 +187,9 @@ void readFile() {
 		file >> ptList[i].x;
 		file >> ptList[i].y;
 	}
+
+	recomputeAllC1();
+
 	file.close(); // is not necessary because the destructor closes the open file by default
 }
 
@@ -150,6 +199,7 @@ void writeFile() {
 	file << nPt << endl;
 
 	for (int i = 0; i < nPt; i++) {
+		// always write the normal version, without conversion to c1 continuity
 		file << ptList[i].x << " ";
 		file << ptList[i].y << endl;
 	}
@@ -158,7 +208,9 @@ void writeFile() {
 
 void clearAllControlPoints() {
 	nPt = 0;
-	memset(&ptList[0], 0, sizeof(ptList)); // not necessary but let's just do it
+	// not necessary but let's just do it
+	memset(&ptList[0], 0, sizeof(ptList));
+	memset(&c1List[0], 0, sizeof(c1List));
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -237,6 +289,8 @@ void mouse(int button, int state, int x, int y)
 		ptList[nPt].x = x;
 		ptList[nPt].y = y;
 		nPt++;
+
+		recomputeC1();
 	}
 	glutPostRedisplay();
 }
