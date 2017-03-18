@@ -16,6 +16,7 @@
 #define MAXPTNO 1000
 #define NLINESEGMENT 32
 #define NOBJECTONCURVE 8
+#define MOVEEXISTINGRANGE 4
 
 using namespace std;
 
@@ -28,6 +29,7 @@ struct Point {
 int nPt = 0;
 Point ptList[MAXPTNO];
 Point c1List[MAXPTNO];
+int movingPoint = -1;
 
 // Display options
 bool displayControlPoints = true;
@@ -599,7 +601,17 @@ void keyboard(unsigned char key, int x, int y) {
 	glutPostRedisplay();
 }
 
-
+int containsPoint(int x, int y) {
+	for (int i = 0; i < nPt; i++) {
+		if ((ptList[i].x >= x - MOVEEXISTINGRANGE) 
+			&& (ptList[i].x <= x + MOVEEXISTINGRANGE) 
+			&& (ptList[i].y >= y - MOVEEXISTINGRANGE) 
+			&& (ptList[i].y <= y + MOVEEXISTINGRANGE)) {
+				return i;
+		}
+	}
+	return -1;
+}
 
 void mouse(int button, int state, int x, int y)
 {
@@ -613,18 +625,35 @@ void mouse(int button, int state, int x, int y)
 		MOUSE_SCROLL_DOWN = 4
 	};
 
-	if ((button == MOUSE_LEFT_BUTTON) && (state == GLUT_UP)) {
-		if (nPt == MAXPTNO) {
-			cout << "Error: Exceeded the maximum number of points." << endl;
-			return;
-		}
-		ptList[nPt].x = x;
-		ptList[nPt].y = y;
-		nPt++;
+	if ((button == MOUSE_LEFT_BUTTON) && (state == GLUT_DOWN)) {
+		movingPoint = containsPoint(x, y);
+		if (movingPoint != -1) {
+			// move existing point
+		} else {
+			// add new point
+			if (nPt == MAXPTNO) {
+				cout << "Error: Exceeded the maximum number of points." << endl;
+				return;
+			}
+			ptList[nPt].x = x;
+			ptList[nPt].y = y;
+			nPt++;
 
-		recomputeC1();
+			recomputeC1();
+		}
+	} else if ((button == MOUSE_LEFT_BUTTON) && (state == GLUT_UP)) {
+		// stop moving existing point
+		movingPoint = -1;
 	}
 	glutPostRedisplay();
+}
+
+void motion(int x, int y) {
+	if (movingPoint != -1) {
+		ptList[movingPoint].x = x;
+		ptList[movingPoint].y = y;
+		glutPostRedisplay();
+	}
 }
 
 int main(int argc, char **argv) {
@@ -648,6 +677,7 @@ int main(int argc, char **argv) {
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
 	glutMainLoop();
 
