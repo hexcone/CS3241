@@ -197,9 +197,8 @@ void drawTangentVectors() {
 				glPushMatrix();
 					glTranslatef(p.x, p.y, 0);
 					double angle = atan((double)pd.y / (double)pd.x) * 180 / M_PI;
-					cout << "Angle: " << angle << endl;
-					if (angle > 180) {
-						angle -= 180;
+					if (pd.x < 0) {
+						angle += 180;
 					}
 					glRotatef(angle, 0, 0, 1);
 					drawRightArrow();
