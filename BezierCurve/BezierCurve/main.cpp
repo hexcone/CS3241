@@ -36,6 +36,201 @@ bool displayTangentVectors = false;
 bool displayObjects = false;
 bool C1Continuity = false;
 
+// Burger from assignment 2
+void drawEllipse(int x, int y)
+{
+	glBegin(GL_POLYGON);
+	for (int i = 0; i < 360; i++)
+	{
+		float rad = i * M_PI / 180;
+		glVertex2f(cos(rad) * x, sin(rad) * y);
+	}
+	glEnd();
+}
+void drawSesemeSeed(void)
+{
+	glPushMatrix();
+		glColor3f(1.0, 1.0, 1.0);
+		glPushMatrix();
+			glTranslatef(-50, 30, 0);
+			glRotatef(35, 0, 0, 1);
+			drawEllipse(10, 5);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(-20, 40, 0);
+			glRotatef(-15, 0, 0, 1);
+			drawEllipse(10, 5);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(10, 30, 0);
+			glRotatef(25, 0, 0, 1);
+			drawEllipse(10, 5);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(40, 40, 0);
+			glRotatef(-25, 0, 0, 1);
+			drawEllipse(10, 5);
+		glPopMatrix();
+	glPopMatrix();
+}
+
+void drawTopBun(void)
+{
+	glPushMatrix();
+		glColor3f(246 / 255.0, 200 / 255.0, 71 / 255.0);
+		glBegin(GL_POLYGON);
+			glVertex2f(cos(0 * M_PI / 180) * 100, (sin(0 * M_PI / 180) * 80) - 10);
+			for (int i = 0; i < 181; i++)
+			{
+				float rad = i * M_PI / 180;
+				glVertex2f(cos(rad) * 100, sin(rad) * 80);
+			}
+			glVertex2f(cos(180 * M_PI / 180) * 100, (sin(180 * M_PI / 180) * 80) - 10);
+		glEnd();
+
+		drawSesemeSeed();
+	glPopMatrix();
+}
+
+void drawTomato(void)
+{
+	glPushMatrix();
+		glColor3f(177 / 255.0, 36 / 255.0, 17 / 255.0);
+		glBegin(GL_QUADS);
+			glVertex2f(-95, -10);
+			glVertex2f(-95, 10);
+			glVertex2f(95, 10);
+			glVertex2f(95, -10);
+		glEnd();
+	glPopMatrix();
+}
+
+void drawPatty(void)
+{
+	glPushMatrix();
+		glColor3f(123 / 255.0, 77 / 255.0, 61 / 255.0);
+		glBegin(GL_QUADS);
+			glVertex2f(-100, -20);
+			glVertex2f(-100, 20);
+			glVertex2f(100, 20);
+			glVertex2f(100, -20);
+		glEnd();
+		glPushMatrix();
+			glTranslatef(-100, 0, 0);
+			glBegin(GL_POLYGON);
+			for (int i = 90; i < 271; i++)
+			{
+				float rad = i * M_PI / 180;
+				glVertex2f(cos(rad) * 20, sin(rad) * 20);
+			}
+			glEnd();
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(100, 0, 0);
+			glBegin(GL_POLYGON);
+			for (int i = -90; i < 91; i++)
+			{
+				float rad = i * M_PI / 180;
+				glVertex2f(cos(rad) * 20, sin(rad) * 20);
+			}
+			glEnd();
+		glPopMatrix();
+	glPopMatrix();
+}
+
+void drawCheese(void)
+{
+	glPushMatrix();
+		glColor3f(246 / 255.0, 233 / 255.0, 145 / 255.0);
+		glBegin(GL_QUADS);
+			glVertex2f(-100, -3);
+			glVertex2f(-100, 3);
+			glVertex2f(100, 3);
+			glVertex2f(100, -3);
+		glEnd();
+		glBegin(GL_TRIANGLES);
+			glVertex2f(0, -3);
+			glVertex2f(80, -3);
+			glVertex2f(40, -25);
+		glEnd();
+	glPopMatrix();
+}
+
+void drawBottomBun(void)
+{
+	glPushMatrix();
+		glColor3f(246 / 255.0, 200 / 255.0, 71 / 255.0);
+		glBegin(GL_QUADS);
+			glVertex2f(-100, -10);
+			glVertex2f(-100, 10);
+			glVertex2f(100, 10);
+			glVertex2f(100, -10);
+		glEnd();
+		glBegin(GL_QUADS);
+			glVertex2f(-80, -30);
+			glVertex2f(-80, 10);
+			glVertex2f(80, 10);
+			glVertex2f(80, -30);
+		glEnd();
+		glPushMatrix();
+			glTranslatef(-80, -10, 0);
+			drawEllipse(20, 20);
+		glPopMatrix();
+		glPushMatrix();
+			glTranslatef(80, -10, 0);
+			drawEllipse(20, 20);
+		glPopMatrix();
+	glPopMatrix();
+}
+
+void drawVeggie(void)
+{
+	glPushMatrix();
+		glColor3f(182 / 255.0, 248 / 255.0, 77 / 255.0);
+		glBegin(GL_QUADS);
+			glVertex2f(-100, -10);
+			glVertex2f(-100, 10);
+			glVertex2f(100, 10);
+			glVertex2f(100, -10);
+		glEnd();
+		glTranslatef(-125, -5, 0);
+		for (int i = 0; i < 9; i++) {
+			glTranslatef(25, 0, 0);
+			drawEllipse(15, 15);
+		}
+	glPopMatrix();
+}
+
+void drawBurger()
+{
+	glPushMatrix();
+		// Patty is our reference meat
+		glPushMatrix();
+			drawPatty();
+		glPopMatrix();
+
+		// Above the patty
+		glPushMatrix();
+			drawCheese();
+		glPopMatrix();
+		glPushMatrix();
+			drawTomato();
+		glPopMatrix();
+		glPushMatrix();
+			drawTopBun();
+		glPopMatrix();
+
+		//Below the patty
+		glPushMatrix();
+			drawBottomBun();
+		glPopMatrix();
+		glPushMatrix();
+			drawVeggie();
+		glPopMatrix();
+	glPopMatrix();
+}
+
+// Assignment requirements
 void recomputeAllC1() {
 	for (int i = 0; i < nPt; i++) {
 		if ((i > 3) && ((i + 2) % 3 == 0)) {
