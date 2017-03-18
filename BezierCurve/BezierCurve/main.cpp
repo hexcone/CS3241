@@ -156,6 +156,61 @@ void drawBezierCurve() {
 	}
 }
 
+void drawTangentVectors() {
+	Point p1, p2, p3, p4, p, pd;
+	for (int i = 0; i < nPt; i += 3) {
+		if (i + 3 < nPt) {
+			if (C1Continuity) {
+				p1 = c1List[i];
+				p2 = c1List[i + 1];
+				p3 = c1List[i + 2];
+				p4 = c1List[i + 3];
+			}
+			else {
+				p1 = ptList[i];
+				p2 = ptList[i + 1];
+				p3 = ptList[i + 2];
+				p4 = ptList[i + 3];
+			}
+
+			for (double j = 0; j < NOBJECTONCURVE + 1; j++) {
+				double t = j / NOBJECTONCURVE;
+				p.x = pow((1 - t), 3) * p1.x +
+					pow((1 - t), 2) * t * 3 * p2.x +
+					(1 - t) * pow(t, 2) * 3 * p3.x +
+					pow(t, 3) * p4.x;
+				p.y = pow((1 - t), 3) * p1.y +
+					pow((1 - t), 2) * t * 3 * p2.y +
+					(1 - t) * pow(t, 2) * 3 * p3.y +
+					pow(t, 3) * p4.y;
+
+				pd.x = pow((1 - t), 2) * -3 * p1.x +
+					(3 * pow(t, 2) - 4 * t + 1) * 3 * p2.x +
+					(-3 * pow(t, 2) + 2 * t) * 3 * p3.x +
+					3 * pow(t, 2) * p4.x;
+
+				pd.y = pow((1 - t), 2) * -3 * p1.y +
+					(3 * pow(t, 2) - 4 * t + 1) * 3 * p2.y +
+					(-3 * pow(t, 2) + 2 * t) * 3 * p3.y +
+					3 * pow(t, 2) * p4.y;
+
+				glPushMatrix();
+					glTranslatef(p.x, p.y, 0);
+					double angle = atan((double)pd.y / (double)pd.x) * 180 / M_PI;
+					cout << "Angle: " << angle << endl;
+					if (angle > 180) {
+						angle -= 180;
+					}
+					glRotatef(angle, 0, 0, 1);
+					drawRightArrow();
+				glPopMatrix();
+			}
+			glEnd();
+		}
+
+	}
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
@@ -172,6 +227,10 @@ void display(void) {
 
 	// draw bezier curve
 	drawBezierCurve();
+
+	if (displayTangentVectors) {
+		drawTangentVectors();
+	}
 
 	glPopMatrix();
 	glutSwapBuffers();
