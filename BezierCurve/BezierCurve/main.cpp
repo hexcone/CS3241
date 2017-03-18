@@ -49,10 +49,10 @@ void drawEllipse(int x, int y)
 	}
 	glEnd();
 }
-void drawSesemeSeed(void)
+void drawSesemeSeed(float alpha)
 {
 	glPushMatrix();
-		glColor3f(1.0, 1.0, 1.0);
+		glColor4f(1.0, 1.0, 1.0, alpha);
 		glPushMatrix();
 			glTranslatef(-50, 30, 0);
 			glRotatef(35, 0, 0, 1);
@@ -76,10 +76,10 @@ void drawSesemeSeed(void)
 	glPopMatrix();
 }
 
-void drawTopBun(void)
+void drawTopBun(float alpha)
 {
 	glPushMatrix();
-		glColor3f(246 / 255.0, 200 / 255.0, 71 / 255.0);
+		glColor4f(246 / 255.0, 200 / 255.0, 71 / 255.0, alpha);
 		glBegin(GL_POLYGON);
 			glVertex2f(cos(0 * M_PI / 180) * 100, (sin(0 * M_PI / 180) * 80) - 10);
 			for (int i = 0; i < 181; i++)
@@ -90,14 +90,14 @@ void drawTopBun(void)
 			glVertex2f(cos(180 * M_PI / 180) * 100, (sin(180 * M_PI / 180) * 80) - 10);
 		glEnd();
 
-		drawSesemeSeed();
+		drawSesemeSeed(alpha);
 	glPopMatrix();
 }
 
-void drawTomato(void)
+void drawTomato(float alpha)
 {
 	glPushMatrix();
-		glColor3f(177 / 255.0, 36 / 255.0, 17 / 255.0);
+		glColor4f(177 / 255.0, 36 / 255.0, 17 / 255.0, alpha);
 		glBegin(GL_QUADS);
 			glVertex2f(-95, -10);
 			glVertex2f(-95, 10);
@@ -107,10 +107,10 @@ void drawTomato(void)
 	glPopMatrix();
 }
 
-void drawPatty(void)
+void drawPatty(float alpha)
 {
 	glPushMatrix();
-		glColor3f(123 / 255.0, 77 / 255.0, 61 / 255.0);
+		glColor4f(123 / 255.0, 77 / 255.0, 61 / 255.0, alpha);
 		glBegin(GL_QUADS);
 			glVertex2f(-100, -20);
 			glVertex2f(-100, 20);
@@ -140,10 +140,10 @@ void drawPatty(void)
 	glPopMatrix();
 }
 
-void drawCheese(void)
+void drawCheese(float alpha)
 {
 	glPushMatrix();
-		glColor3f(246 / 255.0, 233 / 255.0, 145 / 255.0);
+		glColor4f(246 / 255.0, 233 / 255.0, 145 / 255.0, alpha);
 		glBegin(GL_QUADS);
 			glVertex2f(-100, -3);
 			glVertex2f(-100, 3);
@@ -158,10 +158,10 @@ void drawCheese(void)
 	glPopMatrix();
 }
 
-void drawBottomBun(void)
+void drawBottomBun(float alpha)
 {
 	glPushMatrix();
-		glColor3f(246 / 255.0, 200 / 255.0, 71 / 255.0);
+		glColor4f(246 / 255.0, 200 / 255.0, 71 / 255.0, alpha);
 		glBegin(GL_QUADS);
 			glVertex2f(-100, -10);
 			glVertex2f(-100, 10);
@@ -185,10 +185,10 @@ void drawBottomBun(void)
 	glPopMatrix();
 }
 
-void drawVeggie(void)
+void drawVeggie(float alpha)
 {
 	glPushMatrix();
-		glColor3f(182 / 255.0, 248 / 255.0, 77 / 255.0);
+		glColor4f(182 / 255.0, 248 / 255.0, 77 / 255.0, alpha);
 		glBegin(GL_QUADS);
 			glVertex2f(-100, -10);
 			glVertex2f(-100, 10);
@@ -203,38 +203,38 @@ void drawVeggie(void)
 	glPopMatrix();
 }
 
-void drawBurger()
+void drawBurger(float alpha)
 {
 	glPushMatrix();
 		glRotatef(180, 0, 0, 1);
 		glScalef(0.2, 0.2, 1);
 		// Patty is our reference meat
 		glPushMatrix();
-			drawPatty();
+			drawPatty(alpha);
 		glPopMatrix();
 
 		// Above the patty
 		glPushMatrix();
 			glTranslatef(0, 23, 0);
-			drawCheese();
+			drawCheese(alpha);
 		glPopMatrix();
 		glPushMatrix();
 			glTranslatef(0, 36, 0);
-			drawTomato();
+			drawTomato(alpha);
 		glPopMatrix();
 		glPushMatrix();
 			glTranslatef(0, 56, 0);
-			drawTopBun();
+			drawTopBun(alpha);
 		glPopMatrix();
 
 		//Below the patty
 		glPushMatrix();
 		glTranslatef(0, -50, 0);
-			drawBottomBun();
+			drawBottomBun(alpha);
 		glPopMatrix();
 		glPushMatrix();
 			glTranslatef(0, -30, 0);
-			drawVeggie();
+			drawVeggie(alpha);
 		glPopMatrix();
 	glPopMatrix();
 }
@@ -430,8 +430,8 @@ void drawObjects() {
 				p4 = ptList[i + 3];
 			}
 
-			for (double j = 0; j < NOBJECTONCURVE + 1; j++) {
-				double t = j / NOBJECTONCURVE;
+			for (int j = 0; j < NOBJECTONCURVE + 1; j++) {
+				double t = (double)j / NOBJECTONCURVE;
 				p.x = pow((1 - t), 3) * p1.x +
 					pow((1 - t), 2) * t * 3 * p2.x +
 					(1 - t) * pow(t, 2) * 3 * p3.x +
@@ -452,13 +452,24 @@ void drawObjects() {
 					3 * pow(t, 2) * p4.y;
 
 				glPushMatrix();
-				glTranslatef(p.x, p.y, 0);
-				double angle = atan((double)pd.y / (double)pd.x) * 180 / M_PI;
-				if (pd.x < 0) {
-					angle += 180;
-				}
-				glRotatef(angle, 0, 0, 1);
-				drawBurger();
+					glTranslatef(p.x, p.y, 0);
+					double angle = atan((double)pd.y / (double)pd.x) * 180 / M_PI;
+					if (pd.x < 0) {
+						angle += 180;
+					}
+					glRotatef(angle, 0, 0, 1);
+
+					// runtime
+					int runtime = ((int)(glutGet(GLUT_ELAPSED_TIME) * 0.01) % 9 + j) % 9;
+					if (i % 2 == 1) {
+						runtime = 9 - runtime;
+					}
+
+					// scale
+					glScalef(runtime / 8.0, runtime / 8.0, 0);
+					
+					// draw with transparency
+					drawBurger(runtime/8.0);
 				glPopMatrix();
 			}
 			glEnd();
@@ -675,10 +686,13 @@ int main(int argc, char **argv) {
 	glutCreateWindow("CS3241 Assignment 4");
 	init();
 	glutDisplayFunc(display);
+	glutIdleFunc(display);
 	glutReshapeFunc(reshape);
 	glutMouseFunc(mouse);
 	glutMotionFunc(motion);
 	glutKeyboardFunc(keyboard);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 	glutMainLoop();
 
 	return 0;
