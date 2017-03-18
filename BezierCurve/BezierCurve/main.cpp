@@ -204,6 +204,8 @@ void drawVeggie(void)
 void drawBurger()
 {
 	glPushMatrix();
+		glRotatef(180, 0, 0, 1);
+		glScalef(0.2, 0.2, 1);
 		// Patty is our reference meat
 		glPushMatrix();
 			drawPatty();
@@ -211,20 +213,25 @@ void drawBurger()
 
 		// Above the patty
 		glPushMatrix();
+			glTranslatef(0, 23, 0);
 			drawCheese();
 		glPopMatrix();
 		glPushMatrix();
+			glTranslatef(0, 36, 0);
 			drawTomato();
 		glPopMatrix();
 		glPushMatrix();
+			glTranslatef(0, 56, 0);
 			drawTopBun();
 		glPopMatrix();
 
 		//Below the patty
 		glPushMatrix();
+		glTranslatef(0, -50, 0);
 			drawBottomBun();
 		glPopMatrix();
 		glPushMatrix();
+			glTranslatef(0, -30, 0);
 			drawVeggie();
 		glPopMatrix();
 	glPopMatrix();
@@ -401,7 +408,59 @@ void drawTangentVectors() {
 			}
 			glEnd();
 		}
+	}
+}
 
+void drawObjects() {
+	Point p1, p2, p3, p4, p, pd;
+	for (int i = 0; i < nPt; i += 3) {
+		if (i + 3 < nPt) {
+			if (C1Continuity) {
+				p1 = c1List[i];
+				p2 = c1List[i + 1];
+				p3 = c1List[i + 2];
+				p4 = c1List[i + 3];
+			}
+			else {
+				p1 = ptList[i];
+				p2 = ptList[i + 1];
+				p3 = ptList[i + 2];
+				p4 = ptList[i + 3];
+			}
+
+			for (double j = 0; j < NOBJECTONCURVE + 1; j++) {
+				double t = j / NOBJECTONCURVE;
+				p.x = pow((1 - t), 3) * p1.x +
+					pow((1 - t), 2) * t * 3 * p2.x +
+					(1 - t) * pow(t, 2) * 3 * p3.x +
+					pow(t, 3) * p4.x;
+				p.y = pow((1 - t), 3) * p1.y +
+					pow((1 - t), 2) * t * 3 * p2.y +
+					(1 - t) * pow(t, 2) * 3 * p3.y +
+					pow(t, 3) * p4.y;
+
+				pd.x = pow((1 - t), 2) * -3 * p1.x +
+					(3 * pow(t, 2) - 4 * t + 1) * 3 * p2.x +
+					(-3 * pow(t, 2) + 2 * t) * 3 * p3.x +
+					3 * pow(t, 2) * p4.x;
+
+				pd.y = pow((1 - t), 2) * -3 * p1.y +
+					(3 * pow(t, 2) - 4 * t + 1) * 3 * p2.y +
+					(-3 * pow(t, 2) + 2 * t) * 3 * p3.y +
+					3 * pow(t, 2) * p4.y;
+
+				glPushMatrix();
+				glTranslatef(p.x, p.y, 0);
+				double angle = atan((double)pd.y / (double)pd.x) * 180 / M_PI;
+				if (pd.x < 0) {
+					angle += 180;
+				}
+				glRotatef(angle, 0, 0, 1);
+				drawBurger();
+				glPopMatrix();
+			}
+			glEnd();
+		}
 	}
 }
 
@@ -424,6 +483,10 @@ void display(void) {
 
 	if (displayTangentVectors) {
 		drawTangentVectors();
+	}
+
+	if (displayObjects) {
+		drawObjects();
 	}
 
 	glPopMatrix();
@@ -522,7 +585,6 @@ void keyboard(unsigned char key, int x, int y) {
 
 		case 'e':
 		case 'E':
-			// Do something to erase all the control points added
 			clearAllControlPoints();
 			break;
 
