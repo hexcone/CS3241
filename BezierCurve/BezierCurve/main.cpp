@@ -494,10 +494,12 @@ void display(void) {
 	// draw bezier curve
 	drawBezierCurve();
 
+	// draw tangent vectors
 	if (displayTangentVectors) {
 		drawTangentVectors();
 	}
 
+	// draw objects
 	if (displayObjects) {
 		drawObjects();
 	}
