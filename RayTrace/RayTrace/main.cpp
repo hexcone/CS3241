@@ -33,7 +33,6 @@ class RtObject {
 
 public:
 	virtual double intersectWithRay(Ray, Vector3& pos, Vector3& normal) = 0; // return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
-
 																			 // Materials Properties
 	double ambiantReflection[3];
 	double diffusetReflection[3];
@@ -43,7 +42,6 @@ public:
 
 };
 class Sphere : public RtObject {
-
 	Vector3 center_;
 	double r_;
 public:
@@ -82,11 +80,36 @@ Modify Section Here
 Hint: Add additional methods to help you in solving equations
 ==============================*/
 
+double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightdir)
+// distance from point on sphere to light  
+{
+	double distance = sqrt(pow((lightPos.x[0] - intersection.x[0]), 2) +
+		pow((lightPos.x[1] - intersection.x[1]), 2) +
+		pow((lightPos.x[2] - intersection.x[2]), 2));
+
+	// calculate directional vector to light
+	lightdir = (lightPos - intersection);
+	lightdir.normalize();
+
+	return distance;
+}
+
+Vector3 directionToCamera(Vector3& intersection)
+// direction from point on sphere to camera
+{
+	Vector3 cameradir;
+
+	cameradir = (cameraPos - intersection);
+	cameradir.normalize();
+
+	return cameradir;
+}
+
 
 double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 // return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
 {// Step 1
-	double a, b, c, d, t1, t2;
+	double a, b, c, d, t1, t2, t;
 
 	a = dot_prod(r.dir, r.dir);
 	b = dot_prod((r.dir * 2), (r.start - Sphere::center_));
@@ -98,18 +121,27 @@ double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 		t1 = (-b + sqrt(d)) / (2 * a);
 		t2 = (-b - sqrt(d)) / (2 * a);
 		if (t1 < t2) {
-			return t1;
+			t = t1;
 		} else {
-			return t2;
+			t = t2;
 		}
 	} else if (d == 0) {
 		// 1 root
-		t1 = -b / (2 * a);
-		return t1;
+		t = -b / (2 * a);
 	} else {
 		// no root
-		return -1;
+		t = -1;
+		return t;
 	}
+
+	// calculate intersection
+	intersection = r.start + (r.dir * t);
+
+	// calculate normal
+	normal = (intersection - Sphere::center_);
+	normal.normalize();
+
+	return t;
 }
 
 void addAnotherScene() {
@@ -124,7 +156,7 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 	int goBackGround = 1, i = 0;
 	double inColor[3];
 
-	Vector3 intersection, normal;
+	Vector3 intersection, normal, lightdir, cameraDir;
 	Vector3 lightV;
 	Vector3 viewV;
 	Vector3 lightReflectionV;
@@ -139,14 +171,43 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 		if ((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0)
 		{
 			// Step 2
-			//r = g = b = 1.0;
-			r = objList[i]->ambiantReflection[0];
-			g = objList[i]->ambiantReflection[1];
-			b = objList[i]->ambiantReflection[2];
+			double ambient_r, ambient_g, ambient_b;
+			ambient_r = objList[i]->ambiantReflection[0] * ambiantLight[0];
+			ambient_g = objList[i]->ambiantReflection[1] * ambiantLight[1];
+			ambient_b = objList[i]->ambiantReflection[2] * ambiantLight[2];
 
 			// Step 3
-			goBackGround = 0;
+			double diffuse_r, diffuse_g, diffuse_b;
+			double d = distanceToLight(ray, t, intersection, lightdir);
+			double userdefined = 0.00000025;
+			double f = (1 / (userdefined + userdefined * d + userdefined * pow(d, 2)));
+			double NL = dot_prod(normal, lightdir);
+			diffuse_r = f * diffusetLight[0]
+				* objList[i]->diffusetReflection[0] * NL;
+			diffuse_g = f * diffusetLight[1]
+				* objList[i]->diffusetReflection[1] * NL;
+			diffuse_b = f * diffusetLight[2]
+				* objList[i]->diffusetReflection[2] * NL;
 
+			double specular_r, specular_g, specular_b;
+			Vector3 R = (normal * (2 * NL)) - lightdir;
+			Vector3 V = directionToCamera(intersection);
+			double RVn = pow(dot_prod(R, V), objList[i]->speN);
+			specular_r = f * specularLight[0]
+				* objList[i]->specularReflection[0]
+				* RVn;
+			specular_g = f * specularLight[1]
+				* objList[i]->specularReflection[1]
+				* RVn;
+			specular_b = f * specularLight[2]
+				* objList[i]->specularReflection[2]
+				* RVn;
+			
+			r = ambient_r + diffuse_r + specular_r;
+			g = ambient_g + diffuse_g + specular_g;
+			b = ambient_b + diffuse_b + specular_b;
+
+			goBackGround = 0;
 		}
 	}
 
