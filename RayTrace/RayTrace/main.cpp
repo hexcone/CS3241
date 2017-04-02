@@ -94,15 +94,15 @@ double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightdir
 	return distance;
 }
 
-Vector3 directionToCamera(Vector3& intersection)
+Vector3 directionToViewPoint(Ray ray, Vector3& intersection)
 // direction from point on sphere to camera
 {
-	Vector3 cameradir;
+	Vector3 viewdir;
 
-	cameradir = (cameraPos - intersection);
-	cameradir.normalize();
+	viewdir = (ray.start - intersection);
+	viewdir.normalize();
 
-	return cameradir;
+	return viewdir;
 }
 
 
@@ -148,15 +148,19 @@ void addAnotherScene() {
 	//Step 5: Modify objList here
 
 }
-void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int level = 0)
+
+void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 {
 	// Step 4
 	// Checks if it reaches MAX_RT_LEVEL
+	if (level == MAX_RT_LEVEL) {
+		return;
+	}
 
 	int goBackGround = 1, i = 0;
 	double inColor[3];
 
-	Vector3 intersection, normal, lightdir, cameraDir;
+	Vector3 intersection, normal;
 	Vector3 lightV;
 	Vector3 viewV;
 	Vector3 lightReflectionV;
@@ -165,6 +169,87 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 	Ray newRay;
 	double mint = DBL_MAX, t;
 
+	for (i = 0; i < NUM_OBJECTS; i++)
+	{
+		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) 
+			&& (t < mint) && (fromObj != i))
+		{
+			mint = t;
+			// Step 2
+			double ambient_r, ambient_g, ambient_b;
+			ambient_r = objList[i]->ambiantReflection[0] * ambiantLight[0];
+			ambient_g = objList[i]->ambiantReflection[1] * ambiantLight[1];
+			ambient_b = objList[i]->ambiantReflection[2] * ambiantLight[2];
+
+			// Step 3
+			double diffuse_r, diffuse_g, diffuse_b;
+			double d = distanceToLight(ray, t, intersection, lightV);
+			double userdefined = 0.00000025;
+			double f = (1 / (userdefined + userdefined * d + userdefined * pow(d, 2)));
+			double NL = dot_prod(normal, lightV);
+			diffuse_r = f * diffusetLight[0]
+				* objList[i]->diffusetReflection[0] * NL;
+			diffuse_g = f * diffusetLight[1]
+				* objList[i]->diffusetReflection[1] * NL;
+			diffuse_b = f * diffusetLight[2]
+				* objList[i]->diffusetReflection[2] * NL;
+
+			double specular_r, specular_g, specular_b;
+			lightReflectionV = (normal * (2 * NL)) - lightV;
+			viewV = directionToViewPoint(ray, intersection);
+			double RVn = pow(dot_prod(lightReflectionV, viewV), objList[i]->speN);
+			specular_r = f * specularLight[0]
+				* objList[i]->specularReflection[0]
+				* RVn;
+			specular_g = f * specularLight[1]
+				* objList[i]->specularReflection[1]
+				* RVn;
+			specular_b = f * specularLight[2]
+				* objList[i]->specularReflection[2]
+				* RVn;
+
+			double NV = dot_prod(normal, viewV);
+			rayReflectionV = (normal * (2 * NV)) - viewV;
+			newRay.start = intersection;
+			newRay.dir = rayReflectionV;
+			double new_r = 0.0, new_g = 0.0, new_b = 0.0;
+			rayTrace2(newRay, new_r, new_g, new_b, i, level + 1);
+
+			//cout << "\nnew_r: " << new_r;
+			double reflectionweight = objList[i]->speN / 1500;
+			r = ambient_r + diffuse_r + specular_r + (reflectionweight * new_r);
+			g = ambient_g + diffuse_g + specular_g + (reflectionweight * new_g);
+			b = ambient_b + diffuse_b + specular_b + (reflectionweight * new_b);
+
+			goBackGround = 0;
+		}
+	}
+
+	if (goBackGround)
+	{
+		r = bgColor[0];
+		g = bgColor[1];
+		b = bgColor[2];
+	}
+
+}
+
+void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int level = 0)
+{
+	// Step 4
+	// Checks if it reaches MAX_RT_LEVEL
+
+	int goBackGround = 1, i = 0;
+	double inColor[3];
+
+	Vector3 intersection, normal;
+	Vector3 lightV;
+	Vector3 viewV;
+	Vector3 lightReflectionV;
+	Vector3 rayReflectionV;
+
+	Ray newRay;
+	double mint = DBL_MAX, t;
 
 	for (i = 0; i < NUM_OBJECTS; i++)
 	{
@@ -179,10 +264,10 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 
 			// Step 3
 			double diffuse_r, diffuse_g, diffuse_b;
-			double d = distanceToLight(ray, t, intersection, lightdir);
+			double d = distanceToLight(ray, t, intersection, lightV);
 			double userdefined = 0.00000025;
 			double f = (1 / (userdefined + userdefined * d + userdefined * pow(d, 2)));
-			double NL = dot_prod(normal, lightdir);
+			double NL = dot_prod(normal, lightV);
 			diffuse_r = f * diffusetLight[0]
 				* objList[i]->diffusetReflection[0] * NL;
 			diffuse_g = f * diffusetLight[1]
@@ -191,9 +276,9 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 				* objList[i]->diffusetReflection[2] * NL;
 
 			double specular_r, specular_g, specular_b;
-			Vector3 R = (normal * (2 * NL)) - lightdir;
-			Vector3 V = directionToCamera(intersection);
-			double RVn = pow(dot_prod(R, V), objList[i]->speN);
+			lightReflectionV = (normal * (2 * NL)) - lightV;
+			viewV = directionToViewPoint(ray, intersection);
+			double RVn = pow(dot_prod(lightReflectionV, viewV), objList[i]->speN);
 			specular_r = f * specularLight[0]
 				* objList[i]->specularReflection[0]
 				* RVn;
@@ -203,10 +288,19 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 			specular_b = f * specularLight[2]
 				* objList[i]->specularReflection[2]
 				* RVn;
-			
-			r = ambient_r + diffuse_r + specular_r;
-			g = ambient_g + diffuse_g + specular_g;
-			b = ambient_b + diffuse_b + specular_b;
+
+			double NV = dot_prod(normal, viewV);
+			rayReflectionV = (normal * (2 * NV)) - viewV;
+			newRay.start = intersection;
+			newRay.dir = rayReflectionV;
+			double new_r = 0.0, new_g = 0.0, new_b = 0.0;
+			rayTrace2(newRay, new_r, new_g, new_b, i, level + 1);
+
+			//cout << "\nnew_r: " << new_r;
+			double reflectionweight = objList[i]->speN / 1500;
+			r = ambient_r + diffuse_r + specular_r + (reflectionweight * new_r);
+			g = ambient_g + diffuse_g + specular_g + (reflectionweight * new_g);
+			b = ambient_b + diffuse_b + specular_b + (reflectionweight * new_b);
 
 			goBackGround = 0;
 		}
@@ -220,6 +314,7 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 	}
 
 }
+
 /*==============================
 End of Section,
 IT IS NOT RECOMMENDED TO CHANGE ANYTHING BELOW
