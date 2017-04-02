@@ -80,7 +80,7 @@ Modify Section Here
 Hint: Add additional methods to help you in solving equations
 ==============================*/
 
-double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightdir)
+double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightV)
 // distance from point on sphere to light  
 {
 	double distance = sqrt(pow((lightPos.x[0] - intersection.x[0]), 2) +
@@ -88,8 +88,8 @@ double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightdir
 		pow((lightPos.x[2] - intersection.x[2]), 2));
 
 	// calculate directional vector to light
-	lightdir = (lightPos - intersection);
-	lightdir.normalize();
+	lightV = (lightPos - intersection);
+	lightV.normalize();
 
 	return distance;
 }
@@ -103,6 +103,34 @@ Vector3 directionToViewPoint(Ray ray, Vector3& intersection)
 	viewdir.normalize();
 
 	return viewdir;
+}
+
+bool applyShadow(int obj, Vector3 lightV)
+// check if direction to light is blocked by other objects
+{
+	int mini = obj, i;
+	double mint = DBL_MAX, t;
+	Ray ray;
+	Vector3 intersection, normal;
+	
+	ray.start = lightPos;
+	ray.dir = -lightV;
+
+	for (i = 0; i < NUM_OBJECTS; i++)
+	{
+		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) && (t < mint))
+		{
+			mint = t;
+			mini = i;
+		}
+	}
+
+	if (mini != obj) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 
@@ -146,7 +174,54 @@ double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 
 void addAnotherScene() {
 	//Step 5: Modify objList here
+	((Sphere*)objList[0])->set(Vector3(100, 0, -300), 30);//blue
+	((Sphere*)objList[1])->set(Vector3(50, 50, -250), 50);//yellow
+	((Sphere*)objList[2])->set(Vector3(-100, 100, -150), 100);//green
+	((Sphere*)objList[3])->set(Vector3(0, -250, -100), 250);//purple
 
+	objList[0]->ambiantReflection[0] = 0.1;
+	objList[0]->ambiantReflection[1] = 0.4;
+	objList[0]->ambiantReflection[2] = 0.4;
+	objList[0]->diffusetReflection[0] = 0;
+	objList[0]->diffusetReflection[1] = 1;
+	objList[0]->diffusetReflection[2] = 1;
+	objList[0]->specularReflection[0] = 0.2;
+	objList[0]->specularReflection[1] = 0.4;
+	objList[0]->specularReflection[2] = 0.4;
+	objList[0]->speN = 300;
+
+	objList[1]->ambiantReflection[0] = 0.6;
+	objList[1]->ambiantReflection[1] = 0.6;
+	objList[1]->ambiantReflection[2] = 0.2;
+	objList[1]->diffusetReflection[0] = 1;
+	objList[1]->diffusetReflection[1] = 1;
+	objList[1]->diffusetReflection[2] = 0;
+	objList[1]->specularReflection[0] = 0.0;
+	objList[1]->specularReflection[1] = 0.0;
+	objList[1]->specularReflection[2] = 0.0;
+	objList[1]->speN = 50;
+
+	objList[2]->ambiantReflection[0] = 0.1;
+	objList[2]->ambiantReflection[1] = 0.6;
+	objList[2]->ambiantReflection[2] = 0.1;
+	objList[2]->diffusetReflection[0] = 0.1;
+	objList[2]->diffusetReflection[1] = 1;
+	objList[2]->diffusetReflection[2] = 0.1;
+	objList[2]->specularReflection[0] = 0.3;
+	objList[2]->specularReflection[1] = 0.7;
+	objList[2]->specularReflection[2] = 0.3;
+	objList[2]->speN = 650;
+
+	objList[3]->ambiantReflection[0] = 0.3;
+	objList[3]->ambiantReflection[1] = 0.3;
+	objList[3]->ambiantReflection[2] = 0.3;
+	objList[3]->diffusetReflection[0] = 0.7;
+	objList[3]->diffusetReflection[1] = 0.7;
+	objList[3]->diffusetReflection[2] = 0.7;
+	objList[3]->specularReflection[0] = 0.6;
+	objList[3]->specularReflection[1] = 0.6;
+	objList[3]->specularReflection[2] = 0.6;
+	objList[3]->speN = 650;
 }
 
 void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
@@ -317,6 +392,12 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 			r = ambient_r + diffuse_r + specular_r + (reflectionweight * new_r);
 			g = ambient_g + diffuse_g + specular_g + (reflectionweight * new_g);
 			b = ambient_b + diffuse_b + specular_b + (reflectionweight * new_b);
+
+			if (applyShadow(i, lightV)) {
+				r -= 0.5;
+				g -= 0.5;
+				b -= 0.5;
+			}
 
 			goBackGround = 0;
 		}
