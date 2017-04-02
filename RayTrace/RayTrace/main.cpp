@@ -214,10 +214,10 @@ double Cylinder::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 }
 
 void addScene0() {
-	((Sphere*)objList[0])->set(Vector3(-130, 80, 120), 100);
-	((Sphere*)objList[1])->set(Vector3(130, -80, -80), 100);
-	((Sphere*)objList[2])->set(Vector3(-130, -80, -80), 100);
-	((Sphere*)objList[3])->set(Vector3(130, 80, 120), 100);
+	objList[0] = new Sphere(Vector3(-130, 80, 120), 100);
+	objList[1] = new Sphere(Vector3(130, -80, -80), 100);
+	objList[2] = new Sphere(Vector3(-130, -80, -80), 100);
+	objList[3] = new Sphere(Vector3(130, 80, 120), 100);
 
 	objList[0]->ambiantReflection[0] = 0.1;
 	objList[0]->ambiantReflection[1] = 0.4;
