@@ -134,15 +134,19 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 	double mint = DBL_MAX, t;
 
 
-	//for (i = 0; i < NUM_OBJECTS; i++)
-	//Remove above loop comment after step 1
+	for (i = 0; i < NUM_OBJECTS; i++)
 	{
 		if ((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0)
 		{
-			r = g = b = 1.0; 			// Step 2
+			// Step 2
+			//r = g = b = 1.0;
+			r = objList[i]->ambiantReflection[0];
+			g = objList[i]->ambiantReflection[1];
+			b = objList[i]->ambiantReflection[2];
 
-										// Step 3
+			// Step 3
 			goBackGround = 0;
+
 		}
 	}
 
