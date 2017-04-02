@@ -168,8 +168,9 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 
 	for (i = 0; i < NUM_OBJECTS; i++)
 	{
-		if ((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0)
+		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) && (t < mint))
 		{
+			mint = t;
 			// Step 2
 			double ambient_r, ambient_g, ambient_b;
 			ambient_r = objList[i]->ambiantReflection[0] * ambiantLight[0];
