@@ -4,7 +4,6 @@
 #include "vector3D.h"
 #include <chrono>
 
-
 /* Include header files depending on platform */
 #ifdef _WIN32
 #include "GL\freeglut.h"
@@ -24,7 +23,8 @@ using namespace std;
 
 float* pixelBuffer = new float[WINWIDTH * WINHEIGHT * 3];
 
-class Ray { // a ray that start with "start" and going in the direction "dir"
+// A ray that start with "start" and go in the direction "dir"
+class Ray {
 public:
 	Vector3 start, dir;
 };
@@ -32,15 +32,14 @@ public:
 class RtObject {
 
 public:
-	virtual double intersectWithRay(Ray, Vector3& pos, Vector3& normal) = 0; // return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
-																			 // Materials Properties
+	virtual double intersectWithRay(Ray, Vector3& pos, Vector3& normal) = 0;
+	// Materials Properties
 	double ambiantReflection[3];
 	double diffusetReflection[3];
 	double specularReflection[3];
 	double speN = 300;
-
-
 };
+
 class Sphere : public RtObject {
 	Vector3 center_;
 	double r_;
@@ -50,9 +49,10 @@ public:
 	void set(Vector3 c, double r) { center_ = c; r_ = r; };
 	double intersectWithRay(Ray, Vector3& pos, Vector3& normal);
 };
+
 class Cylinder : public RtObject {
 	Vector3 center_;
-	double r_; // half of total edge length
+	double r_;
 public:
 	Cylinder(Vector3 c, double r) { center_ = c; r_ = r; };
 	Cylinder() {};
@@ -60,26 +60,23 @@ public:
 	double intersectWithRay(Ray, Vector3& pos, Vector3& normal);
 };
 
-RtObject **objList; // The list of all objects in the scene
+// The list of all objects in the scene
+RtObject **objList; 
 
-
-					// Global Variables
-					// Camera Settings
+// Camera Settings
 Vector3 cameraPos(0, 0, -500);
 
-// assume the the following two vectors are normalised
+// Assume the the following two vectors are normalised
 Vector3 lookAtDir(0, 0, 1);
 Vector3 upVector(0, 1, 0);
 Vector3 leftVector(1, 0, 0);
 float focalLen = 500;
 
 // Light Settings
-
 Vector3 lightPos(900, 1000, -1500);
 double ambiantLight[3] = { 0.4,0.4,0.4 };
 double diffusetLight[3] = { 0.7,0.7, 0.7 };
 double specularLight[3] = { 0.5,0.5, 0.5 };
-
 
 double bgColor[3] = { 0.1,0.1,0.4 };
 
@@ -89,9 +86,8 @@ Modify Section Here
 Hint: Add additional methods to help you in solving equations
 ==============================*/
 
-double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightV)
-// distance from point on sphere to light  
-{
+// Distance from point on sphere to light
+double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightV) {
 	double distance = sqrt(pow((lightPos.x[0] - intersection.x[0]), 2) +
 		pow((lightPos.x[1] - intersection.x[1]), 2) +
 		pow((lightPos.x[2] - intersection.x[2]), 2));
@@ -103,9 +99,8 @@ double distanceToLight(Ray r, double t, Vector3& intersection, Vector3& lightV)
 	return distance;
 }
 
-Vector3 directionToViewPoint(Ray ray, Vector3& intersection)
-// direction from point on sphere to camera
-{
+// Direction from point on sphere to camera
+Vector3 directionToViewPoint(Ray ray, Vector3& intersection) {
 	Vector3 viewdir;
 
 	viewdir = (ray.start - intersection);
@@ -114,9 +109,8 @@ Vector3 directionToViewPoint(Ray ray, Vector3& intersection)
 	return viewdir;
 }
 
-bool applyShadow(int obj, Vector3 lightV)
-// check if direction to light is blocked by other objects
-{
+// Check if direction to light is blocked by other objects
+bool applyShadow(int obj, Vector3 lightV) {
 	int mini = obj, i;
 	double mint = DBL_MAX, t;
 	Ray ray;
@@ -125,10 +119,9 @@ bool applyShadow(int obj, Vector3 lightV)
 	ray.start = lightPos;
 	ray.dir = -lightV;
 
-	for (i = 0; i < NUM_OBJECTS; i++)
-	{
-		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) && (t < mint))
-		{
+	for (i = 0; i < NUM_OBJECTS; i++) {
+		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) 
+			&& (t < mint)) {
 			mint = t;
 			mini = i;
 		}
@@ -136,16 +129,14 @@ bool applyShadow(int obj, Vector3 lightV)
 
 	if (mini != obj) {
 		return true;
-	}
-	else {
+	} else {
 		return false;
 	}
 }
 
-
-double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
-// return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
-{// Step 1
+// Step 1
+// Return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
+double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal) {
 	double a, b, c, d, t1, t2, t;
 
 	a = dot_prod(r.dir, r.dir);
@@ -181,9 +172,8 @@ double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 	return t;
 }
 
-double Cylinder::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
-// return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
-{// Step 1
+// Return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
+double Cylinder::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal) {
 	double a, b, c, d, t1, t2, t;
 
 	a = pow(r.dir.x[0], 2) + pow(r.dir.x[1], 2);
@@ -200,16 +190,13 @@ double Cylinder::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 		t2 = (-b - sqrt(d)) / (2 * a);
 		if (t1 < t2) {
 			t = t1;
-		}
-		else {
+		} else {
 			t = t2;
 		}
-	}
-	else if (d == 0) {
+	} else if (d == 0) {
 		// 1 root
 		t = -b / (2 * a);
-	}
-	else {
+	} else {
 		// no root
 		t = -1;
 		return t;
@@ -380,8 +367,7 @@ void addScene2() {
 	objList[3]->speN = 650;
 }
 
-void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
-{
+void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level) {
 	// Step 4
 	// Checks if it reaches MAX_RT_LEVEL
 	if (level == MAX_RT_LEVEL) {
@@ -400,12 +386,11 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 	Ray newRay;
 	double mint = DBL_MAX, t;
 
-	for (i = 0; i < NUM_OBJECTS; i++)
-	{
+	for (i = 0; i < NUM_OBJECTS; i++) {
 		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) 
-			&& (t < mint) && (fromObj != i))
-		{
+			&& (t < mint) && (fromObj != i)) {
 			mint = t;
+
 			// Step 2
 			double ambient_r, ambient_g, ambient_b;
 			ambient_r = objList[i]->ambiantReflection[0] * ambiantLight[0];
@@ -464,8 +449,7 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 		}
 	}
 
-	if (goBackGround)
-	{
+	if (goBackGround) {
 		r = bgColor[0];
 		g = bgColor[1];
 		b = bgColor[2];
@@ -473,11 +457,8 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 
 }
 
-void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int level = 0)
-{
+void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int level = 0) {
 	// Step 4
-	// Checks if it reaches MAX_RT_LEVEL
-
 	int goBackGround = 1, i = 0;
 	double inColor[3];
 
@@ -490,11 +471,11 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 	Ray newRay;
 	double mint = DBL_MAX, t;
 
-	for (i = 0; i < NUM_OBJECTS; i++)
-	{
-		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) && (t < mint))
-		{
+	for (i = 0; i < NUM_OBJECTS; i++) {
+		if (((t = objList[i]->intersectWithRay(ray, intersection, normal)) > 0) 
+			&& (t < mint)) {
 			mint = t;
+			
 			// Step 2
 			double ambient_r, ambient_g, ambient_b;
 			ambient_r = objList[i]->ambiantReflection[0] * ambiantLight[0];
@@ -559,8 +540,7 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 		}
 	}
 
-	if (goBackGround)
-	{
+	if (goBackGround) {
 		r = bgColor[0];
 		g = bgColor[1];
 		b = bgColor[2];
@@ -582,8 +562,7 @@ void drawInPixelBuffer(int x, int y, double r, double g, double b)
 	pixelBuffer[(y*WINWIDTH + x) * 3 + 2] = (float)b;
 }
 
-void renderScene()
-{
+void renderScene() {
 	int x, y;
 	Ray ray;
 	double r, g, b;
@@ -597,7 +576,7 @@ void renderScene()
 	Vector3 startingPt = vpCenter + leftVector * (-WINWIDTH / 2.0) + upVector * (-WINHEIGHT / 2.0);
 	Vector3 currPt;
 
-	for (x = 0; x<WINWIDTH; x++)
+	for (x = 0; x < WINWIDTH; x++) {
 		for (y = 0; y < WINHEIGHT; y++)
 		{
 			currPt = startingPt + leftVector*x + upVector*y;
@@ -606,6 +585,7 @@ void renderScene()
 			rayTrace(ray, r, g, b);
 			drawInPixelBuffer(x, y, r, g, b);
 		}
+	}
 
 	__int64 time2 = chrono::duration_cast<chrono::milliseconds>(chrono::steady_clock::now().time_since_epoch()).count(); // marking the ending time
 
@@ -613,16 +593,14 @@ void renderScene()
 }
 
 
-void display(void)
-{
+void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DOUBLEBUFFER);
 	glDrawPixels(WINWIDTH, WINHEIGHT, GL_RGB, GL_FLOAT, pixelBuffer);
 	glutSwapBuffers();
 	glFlush();
 }
 
-void reshape(int w, int h)
-{
+void reshape(int w, int h) {
 	glViewport(0, 0, (GLsizei)w, (GLsizei)h);
 
 	glMatrixMode(GL_PROJECTION);
@@ -634,32 +612,26 @@ void reshape(int w, int h)
 }
 
 
-void setScene(int i = 0)
-{
-	if (i > NUM_SCENE)
-	{
+void setScene(int i = 0) {
+	if (i > NUM_SCENE) {
 		cout << "Warning: Invalid Scene Number" << endl;
 		return;
 	}
 
-	if (i == 0)
-	{
-		addScene2();
+	if (i == 0) {
+		addScene0();
 	}
 
-	if (i == 1)
-	{
+	if (i == 1) {
 		addScene1();
 	}
 
-	if (i == 2)
-	{
-		addScene0();
+	if (i == 2) {
+		addScene2();
 	}
 }
 
-void keyboard(unsigned char key, int x, int y)
-{
+void keyboard(unsigned char key, int x, int y) {
 	//keys to control scaling - k
 	//keys to control rotation - alpha
 	//keys to control translation - tx, ty
@@ -680,10 +652,7 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
-int main(int argc, char **argv)
-{
-
-
+int main(int argc, char **argv) {
 	cout << "<<CS3241 Lab 5>>\n\n" << endl;
 	cout << "S to go to next scene" << endl;
 	cout << "Q to quit" << endl;
@@ -713,10 +682,10 @@ int main(int argc, char **argv)
 
 	glutMainLoop();
 
-	for (int i = 0; i < NUM_OBJECTS; i++)
+	for (int i = 0; i < NUM_OBJECTS; i++) {
 		delete objList[i];
+	}
 	delete[] objList;
-
 	delete[] pixelBuffer;
 
 	return 0;
