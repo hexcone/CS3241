@@ -193,6 +193,15 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 				* objList[i]->diffusetReflection[1] * NL;
 			diffuse_b = f * diffusetLight[2]
 				* objList[i]->diffusetReflection[2] * NL;
+			if (diffuse_r < 0) {
+				diffuse_r = 0;
+			}
+			if (diffuse_g < 0) {
+				diffuse_g = 0;
+			}
+			if (diffuse_b < 0) {
+				diffuse_b = 0;
+			}
 
 			double specular_r, specular_g, specular_b;
 			lightReflectionV = (normal * (2 * NL)) - lightV;
@@ -207,7 +216,7 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 			specular_b = f * specularLight[2]
 				* objList[i]->specularReflection[2]
 				* RVn;
-
+			
 			double NV = dot_prod(normal, viewV);
 			rayReflectionV = (normal * (2 * NV)) - viewV;
 			newRay.start = intersection;
@@ -215,8 +224,7 @@ void rayTrace2(Ray ray, double& r, double& g, double& b, int fromObj, int level)
 			double new_r = 0.0, new_g = 0.0, new_b = 0.0;
 			rayTrace2(newRay, new_r, new_g, new_b, i, level + 1);
 
-			//cout << "\nnew_r: " << new_r;
-			double reflectionweight = objList[i]->speN / 1500;
+			double reflectionweight = (objList[i]->speN - 50) / 1000.0;
 			r = ambient_r + diffuse_r + specular_r + (reflectionweight * new_r);
 			g = ambient_g + diffuse_g + specular_g + (reflectionweight * new_g);
 			b = ambient_b + diffuse_b + specular_b + (reflectionweight * new_b);
@@ -274,6 +282,15 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 				* objList[i]->diffusetReflection[1] * NL;
 			diffuse_b = f * diffusetLight[2]
 				* objList[i]->diffusetReflection[2] * NL;
+			if (diffuse_r < 0) {
+				diffuse_r = 0;
+			}
+			if (diffuse_g < 0) {
+				diffuse_g = 0;
+			}
+			if (diffuse_b < 0) {
+				diffuse_b = 0;
+			}
 
 			double specular_r, specular_g, specular_b;
 			lightReflectionV = (normal * (2 * NL)) - lightV;
@@ -296,8 +313,7 @@ void rayTrace(Ray ray, double& r, double& g, double& b, int fromObj = -1, int le
 			double new_r = 0.0, new_g = 0.0, new_b = 0.0;
 			rayTrace2(newRay, new_r, new_g, new_b, i, level + 1);
 
-			//cout << "\nnew_r: " << new_r;
-			double reflectionweight = objList[i]->speN / 1500;
+			double reflectionweight = (objList[i]->speN - 50) / 1000.0;
 			r = ambient_r + diffuse_r + specular_r + (reflectionweight * new_r);
 			g = ambient_g + diffuse_g + specular_g + (reflectionweight * new_g);
 			b = ambient_b + diffuse_b + specular_b + (reflectionweight * new_b);
