@@ -18,7 +18,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D:\Dropbox\NUS\arctic_cube\CS3241 Computer Graphics\Assignments\Lab5\Lab5_Windows\Lab5 Ray Tracing\vector3D.cpp">
+    <ClCompile Include="vector3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -26,8 +26,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D:\Dropbox\NUS\arctic_cube\CS3241 Computer Graphics\Assignments\Lab5\Lab5_Windows\Lab5 Ray Tracing\vector3D.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="vector3D.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

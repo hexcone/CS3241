@@ -86,8 +86,30 @@ Hint: Add additional methods to help you in solving equations
 double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 // return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
 {// Step 1
+	double a, b, c, d, t1, t2;
 
-	return -1;
+	a = dot_prod(r.dir, r.dir);
+	b = dot_prod((r.dir * 2), (r.start - Sphere::center_));
+	c = dot_prod((r.start - Sphere::center_), (r.start - Sphere::center_)) - pow(Sphere::r_, 2);
+	d = pow(b, 2) - (4 * a * c);
+	
+	if (d > 0) {
+		// 2 roots
+		t1 = (-b + sqrt(d)) / (2 * a);
+		t2 = (-b - sqrt(d)) / (2 * a);
+		if (t1 < t2) {
+			return t1;
+		} else {
+			return t2;
+		}
+	} else if (d == 0) {
+		// 1 root
+		t1 = -b / (2 * a);
+		return t1;
+	} else {
+		// no root
+		return -1;
+	}
 }
 
 void addAnotherScene() {

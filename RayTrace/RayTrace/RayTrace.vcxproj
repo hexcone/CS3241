@@ -110,14 +110,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="D:\Dropbox\NUS\arctic_cube\CS3241 Computer Graphics\Assignments\Lab5\Lab5_Windows\Lab5 Ray Tracing\vector3D.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="vector3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="D:\Dropbox\NUS\arctic_cube\CS3241 Computer Graphics\Assignments\Lab5\Lab5_Windows\Lab5 Ray Tracing\vector3D.h" />
+    <ClInclude Include="vector3D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
