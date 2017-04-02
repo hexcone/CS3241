@@ -20,7 +20,7 @@ using namespace std;
 #define WINHEIGHT 400
 #define NUM_OBJECTS 4
 #define MAX_RT_LEVEL 50
-#define NUM_SCENE 2
+#define NUM_SCENE 3
 
 float* pixelBuffer = new float[WINWIDTH * WINHEIGHT * 3];
 
@@ -47,6 +47,15 @@ class Sphere : public RtObject {
 public:
 	Sphere(Vector3 c, double r) { center_ = c; r_ = r; };
 	Sphere() {};
+	void set(Vector3 c, double r) { center_ = c; r_ = r; };
+	double intersectWithRay(Ray, Vector3& pos, Vector3& normal);
+};
+class Cylinder : public RtObject {
+	Vector3 center_;
+	double r_; // half of total edge length
+public:
+	Cylinder(Vector3 c, double r) { center_ = c; r_ = r; };
+	Cylinder() {};
 	void set(Vector3 c, double r) { center_ = c; r_ = r; };
 	double intersectWithRay(Ray, Vector3& pos, Vector3& normal);
 };
@@ -172,12 +181,159 @@ double Sphere::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
 	return t;
 }
 
-void addAnotherScene() {
+double Cylinder::intersectWithRay(Ray r, Vector3& intersection, Vector3& normal)
+// return a -ve if there is no intersection. Otherwise, return the smallest postive value of t
+{// Step 1
+	double a, b, c, d, t1, t2, t;
+
+	a = pow(r.dir.x[0], 2) + pow(r.dir.x[1], 2);
+	b = (2 * r.dir.x[0] * (r.start.x[0] - Cylinder::center_.x[0])) + (2 * r.dir.x[1] * (r.start.x[1] - Cylinder::center_.x[0]));
+	c = pow(r.start.x[0], 2) - (2 * r.start.x[0] * Cylinder::center_.x[0]) + pow(Cylinder::center_.x[0], 2)
+		+ pow(r.start.x[1], 2) - (2 * r.start.x[1] * Cylinder::center_.x[1]) + pow(Cylinder::center_.x[1], 2)
+		- pow(Cylinder::r_, 2);
+	
+	d = pow(b, 2) - (4 * a * c);
+
+	if (d > 0) {
+		// 2 roots
+		t1 = (-b + sqrt(d)) / (2 * a);
+		t2 = (-b - sqrt(d)) / (2 * a);
+		if (t1 < t2) {
+			t = t1;
+		}
+		else {
+			t = t2;
+		}
+	}
+	else if (d == 0) {
+		// 1 root
+		t = -b / (2 * a);
+	}
+	else {
+		// no root
+		t = -1;
+		return t;
+	}
+
+	// calculate intersection
+	intersection = r.start + (r.dir * t);
+	
+	// calculate normal
+	Vector3 axis = Vector3(Cylinder::center_.x[0], Cylinder::center_.x[1], intersection.x[2]);
+	normal = intersection - axis;
+	normal.normalize();
+
+	return t;
+}
+
+void addScene0() {
+	((Sphere*)objList[0])->set(Vector3(-130, 80, 120), 100);
+	((Sphere*)objList[1])->set(Vector3(130, -80, -80), 100);
+	((Sphere*)objList[2])->set(Vector3(-130, -80, -80), 100);
+	((Sphere*)objList[3])->set(Vector3(130, 80, 120), 100);
+
+	objList[0]->ambiantReflection[0] = 0.1;
+	objList[0]->ambiantReflection[1] = 0.4;
+	objList[0]->ambiantReflection[2] = 0.4;
+	objList[0]->diffusetReflection[0] = 0;
+	objList[0]->diffusetReflection[1] = 1;
+	objList[0]->diffusetReflection[2] = 1;
+	objList[0]->specularReflection[0] = 0.2;
+	objList[0]->specularReflection[1] = 0.4;
+	objList[0]->specularReflection[2] = 0.4;
+	objList[0]->speN = 300;
+
+	objList[1]->ambiantReflection[0] = 0.6;
+	objList[1]->ambiantReflection[1] = 0.6;
+	objList[1]->ambiantReflection[2] = 0.2;
+	objList[1]->diffusetReflection[0] = 1;
+	objList[1]->diffusetReflection[1] = 1;
+	objList[1]->diffusetReflection[2] = 0;
+	objList[1]->specularReflection[0] = 0.0;
+	objList[1]->specularReflection[1] = 0.0;
+	objList[1]->specularReflection[2] = 0.0;
+	objList[1]->speN = 50;
+
+	objList[2]->ambiantReflection[0] = 0.1;
+	objList[2]->ambiantReflection[1] = 0.6;
+	objList[2]->ambiantReflection[2] = 0.1;
+	objList[2]->diffusetReflection[0] = 0.1;
+	objList[2]->diffusetReflection[1] = 1;
+	objList[2]->diffusetReflection[2] = 0.1;
+	objList[2]->specularReflection[0] = 0.3;
+	objList[2]->specularReflection[1] = 0.7;
+	objList[2]->specularReflection[2] = 0.3;
+	objList[2]->speN = 650;
+
+	objList[3]->ambiantReflection[0] = 0.3;
+	objList[3]->ambiantReflection[1] = 0.3;
+	objList[3]->ambiantReflection[2] = 0.3;
+	objList[3]->diffusetReflection[0] = 0.7;
+	objList[3]->diffusetReflection[1] = 0.7;
+	objList[3]->diffusetReflection[2] = 0.7;
+	objList[3]->specularReflection[0] = 0.6;
+	objList[3]->specularReflection[1] = 0.6;
+	objList[3]->specularReflection[2] = 0.6;
+	objList[3]->speN = 650;
+}
+
+void addScene1() {
 	//Step 5: Modify objList here
-	((Sphere*)objList[0])->set(Vector3(100, 0, -300), 30);//blue
-	((Sphere*)objList[1])->set(Vector3(50, 50, -250), 50);//yellow
-	((Sphere*)objList[2])->set(Vector3(-100, 100, -150), 100);//green
-	((Sphere*)objList[3])->set(Vector3(0, -250, -100), 250);//purple
+	objList[0] = new Sphere(Vector3(100, 0, -300), 30); //blue
+	objList[1] = new Sphere(Vector3(50, 50, -250), 50); //yellow
+	objList[2] = new Sphere(Vector3(-100, 100, -150), 100); //green
+	objList[3] = new Sphere(Vector3(0, -250, -100), 250); //purple
+
+	objList[0]->ambiantReflection[0] = 0.1;
+	objList[0]->ambiantReflection[1] = 0.4;
+	objList[0]->ambiantReflection[2] = 0.4;
+	objList[0]->diffusetReflection[0] = 0;
+	objList[0]->diffusetReflection[1] = 1;
+	objList[0]->diffusetReflection[2] = 1;
+	objList[0]->specularReflection[0] = 0.2;
+	objList[0]->specularReflection[1] = 0.4;
+	objList[0]->specularReflection[2] = 0.4;
+	objList[0]->speN = 300;
+
+	objList[1]->ambiantReflection[0] = 0.6;
+	objList[1]->ambiantReflection[1] = 0.6;
+	objList[1]->ambiantReflection[2] = 0.2;
+	objList[1]->diffusetReflection[0] = 1;
+	objList[1]->diffusetReflection[1] = 1;
+	objList[1]->diffusetReflection[2] = 0;
+	objList[1]->specularReflection[0] = 0.0;
+	objList[1]->specularReflection[1] = 0.0;
+	objList[1]->specularReflection[2] = 0.0;
+	objList[1]->speN = 50;
+
+	objList[2]->ambiantReflection[0] = 0.1;
+	objList[2]->ambiantReflection[1] = 0.6;
+	objList[2]->ambiantReflection[2] = 0.1;
+	objList[2]->diffusetReflection[0] = 0.1;
+	objList[2]->diffusetReflection[1] = 1;
+	objList[2]->diffusetReflection[2] = 0.1;
+	objList[2]->specularReflection[0] = 0.3;
+	objList[2]->specularReflection[1] = 0.7;
+	objList[2]->specularReflection[2] = 0.3;
+	objList[2]->speN = 650;
+
+	objList[3]->ambiantReflection[0] = 0.3;
+	objList[3]->ambiantReflection[1] = 0.3;
+	objList[3]->ambiantReflection[2] = 0.3;
+	objList[3]->diffusetReflection[0] = 0.7;
+	objList[3]->diffusetReflection[1] = 0.7;
+	objList[3]->diffusetReflection[2] = 0.7;
+	objList[3]->specularReflection[0] = 0.6;
+	objList[3]->specularReflection[1] = 0.6;
+	objList[3]->specularReflection[2] = 0.6;
+	objList[3]->speN = 650;
+}
+
+void addScene2() {
+	objList[0] = new Sphere(Vector3(100, 0, -300), 30); //blue
+	objList[1] = new Sphere(Vector3(50, 50, -250), 50); //yellow
+	objList[2] = new Sphere(Vector3(-100, 100, -150), 100); //green
+	objList[3] = new Cylinder(Vector3(-30, -30, 0), 30); //purple
 
 	objList[0]->ambiantReflection[0] = 0.1;
 	objList[0]->ambiantReflection[1] = 0.4;
@@ -488,63 +644,17 @@ void setScene(int i = 0)
 
 	if (i == 0)
 	{
-
-		((Sphere*)objList[0])->set(Vector3(-130, 80, 120), 100);
-		((Sphere*)objList[1])->set(Vector3(130, -80, -80), 100);
-		((Sphere*)objList[2])->set(Vector3(-130, -80, -80), 100);
-		((Sphere*)objList[3])->set(Vector3(130, 80, 120), 100);
-
-		objList[0]->ambiantReflection[0] = 0.1;
-		objList[0]->ambiantReflection[1] = 0.4;
-		objList[0]->ambiantReflection[2] = 0.4;
-		objList[0]->diffusetReflection[0] = 0;
-		objList[0]->diffusetReflection[1] = 1;
-		objList[0]->diffusetReflection[2] = 1;
-		objList[0]->specularReflection[0] = 0.2;
-		objList[0]->specularReflection[1] = 0.4;
-		objList[0]->specularReflection[2] = 0.4;
-		objList[0]->speN = 300;
-
-		objList[1]->ambiantReflection[0] = 0.6;
-		objList[1]->ambiantReflection[1] = 0.6;
-		objList[1]->ambiantReflection[2] = 0.2;
-		objList[1]->diffusetReflection[0] = 1;
-		objList[1]->diffusetReflection[1] = 1;
-		objList[1]->diffusetReflection[2] = 0;
-		objList[1]->specularReflection[0] = 0.0;
-		objList[1]->specularReflection[1] = 0.0;
-		objList[1]->specularReflection[2] = 0.0;
-		objList[1]->speN = 50;
-
-		objList[2]->ambiantReflection[0] = 0.1;
-		objList[2]->ambiantReflection[1] = 0.6;
-		objList[2]->ambiantReflection[2] = 0.1;
-		objList[2]->diffusetReflection[0] = 0.1;
-		objList[2]->diffusetReflection[1] = 1;
-		objList[2]->diffusetReflection[2] = 0.1;
-		objList[2]->specularReflection[0] = 0.3;
-		objList[2]->specularReflection[1] = 0.7;
-		objList[2]->specularReflection[2] = 0.3;
-		objList[2]->speN = 650;
-
-		objList[3]->ambiantReflection[0] = 0.3;
-		objList[3]->ambiantReflection[1] = 0.3;
-		objList[3]->ambiantReflection[2] = 0.3;
-		objList[3]->diffusetReflection[0] = 0.7;
-		objList[3]->diffusetReflection[1] = 0.7;
-		objList[3]->diffusetReflection[2] = 0.7;
-		objList[3]->specularReflection[0] = 0.6;
-		objList[3]->specularReflection[1] = 0.6;
-		objList[3]->specularReflection[2] = 0.6;
-		objList[3]->speN = 650;
-
+		addScene2();
 	}
 
 	if (i == 1)
 	{
+		addScene1();
+	}
 
-		// Step 5
-		addAnotherScene();
+	if (i == 2)
+	{
+		addScene0();
 	}
 }
 
