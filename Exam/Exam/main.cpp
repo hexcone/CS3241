@@ -125,6 +125,35 @@ void drawRecursiveSquare(int n) {
 	}
 }
 
+void drawCircleForRecursiveCircle(int radius) {
+	glLineWidth(1);
+	glColor3f(0.0, 0.0, 0.0);
+
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i <= 360; i++) {
+		float degInRad = i * M_PI / 180;
+		glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
+	}
+	glEnd();
+}
+
+void drawRecursiveCircle(int n) {
+	int radius = 10;
+
+	drawCircleForRecursiveCircle(radius);
+	
+	if (n > 1) {
+		for (int i = 0; i < 3; i++) {
+			glPushMatrix();
+			glRotatef(i * 120, 0, 0, 1);
+			glScalef(0.5, 0.5, 0);
+			glTranslatef(0, 3 * radius, 0);
+			drawRecursiveCircle(n - 1);
+			glPopMatrix();
+		}
+	}
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -138,7 +167,8 @@ void display(void) {
 	//draw your stuff here
 	//reflectAlongAxis(); //Semester 1, 2016/2017, Question 2
 	//drawPattern(50); //Semester 2, 2015/2016, Question 1
-	drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
+	//drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
+	drawRecursiveCircle(3);  //Semester 2, 2014/2015, Question 2
 
 	//end
 	glPopMatrix();
