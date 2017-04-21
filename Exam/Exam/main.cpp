@@ -92,8 +92,41 @@ void drawPattern(int radius) {
 	}
 }
 
+void drawSquare() {
+	glBegin(GL_QUADS);
+	glColor3f(1, 1, 1);
+	glVertex3f(1, 1, 0);
+	glVertex3f(1, -1, 0);
+	glVertex3f(-1, -1, 0);
+	glVertex3f(-1, 1, 0);
+	glEnd();
+	glLineWidth(2);
+	glBegin(GL_LINE_LOOP);
+	glColor3f(0, 0, 0);
+	glVertex3f(1, 1, 0);
+	glVertex3f(1, -1, 0);
+	glVertex3f(-1, -1, 0);
+	glVertex3f(-1, 1, 0);
+	glEnd();
+}
+
+void drawRecursiveSquare(int n) {
+	drawSquare();
+	if (n > 1) {
+		for (int i = -1; i <= 1; i += 2) {
+			for (int j = -1; j <= 1; j += 2) {
+				glPushMatrix();
+				glTranslatef(i, j, -1);
+				glScalef(0.5, 0.5, 0);
+				drawRecursiveSquare(n - 1);
+				glPopMatrix();
+			}
+		}
+	}
+}
+
 void display(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glPushMatrix();
 
@@ -104,7 +137,8 @@ void display(void) {
 
 	//draw your stuff here
 	//reflectAlongAxis(); //Semester 1, 2016/2017, Question 2
-	drawPattern(50); //Semester 2, 2015/2016, Question 1
+	//drawPattern(50); //Semester 2, 2015/2016, Question 1
+	drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
 
 	//end
 	glPopMatrix();
@@ -204,6 +238,9 @@ int main(int argc, char **argv) {
 	glutReshapeFunc(reshape);
 	//glutMouseFunc(mouse);
 	glutKeyboardFunc(keyboard);
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+
 	glutMainLoop();
 
 	return 0;
