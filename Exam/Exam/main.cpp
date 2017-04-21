@@ -71,6 +71,27 @@ void reflectAlongAxis() {
 	drawSquareForReflect();
 }
 
+void drawHalfCircleForPattern(int radius) {
+	glLineWidth(1);
+	glColor3f(0.0, 0.0, 0.0);
+
+	glBegin(GL_LINE_STRIP);
+	for (int i = 0; i <= 180; i++) {
+		float degInRad = i * M_PI / 180;
+		glVertex2f(radius + cos(degInRad) * radius, sin(degInRad) * radius);
+	}
+	glEnd();
+}
+
+void drawPattern(int radius) {
+	// draw and transform
+	for (int i = 0; i < 5; i++) {
+		drawHalfCircleForPattern(radius);
+		glTranslatef(radius, radius, 0);
+		glScalef(0.5, 0.5, 1);
+	}
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -82,7 +103,8 @@ void display(void) {
 	glRotatef(alpha, 0, 0, 1);
 
 	//draw your stuff here
-	reflectAlongAxis(); //Semester 1, 2016/2017, Question 2
+	//reflectAlongAxis(); //Semester 1, 2016/2017, Question 2
+	drawPattern(50); //Semester 2, 2015/2016, Question 1
 
 	//end
 	glPopMatrix();
