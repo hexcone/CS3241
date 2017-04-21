@@ -92,7 +92,7 @@ void drawPattern(int radius) {
 	}
 }
 
-void drawSquare() {
+void drawSquareForRecursiveSquare() {
 	glBegin(GL_QUADS);
 	glColor3f(1, 1, 1);
 	glVertex3f(1, 1, 0);
@@ -111,7 +111,7 @@ void drawSquare() {
 }
 
 void drawRecursiveSquare(int n) {
-	drawSquare();
+	drawSquareForRecursiveSquare();
 	if (n > 1) {
 		for (int i = -1; i <= 1; i += 2) {
 			for (int j = -1; j <= 1; j += 2) {
