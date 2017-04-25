@@ -154,6 +154,53 @@ void drawRecursiveCircle(int n) {
 	}
 }
 
+void drawMoon() {
+	double radius = 0.2;
+	glColor3f(0.5, 0.5, 0.5);
+	glBegin(GL_POLYGON);
+	for (int i = 0; i <= 360; i++) {
+		float degInRad = i * M_PI / 180;
+		glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
+	}
+	glEnd();
+}
+
+void drawEarth() {
+	double radius = 0.5;
+	glColor3f(0, 1, 1);
+	glBegin(GL_POLYGON);
+	for (int i = 0; i <= 360; i++) {
+		float degInRad = i * M_PI / 180;
+		glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
+	}
+	glEnd();
+}
+
+void drawSun() {
+	double radius = 1;
+	glColor3f(1, 1, 0);
+	glBegin(GL_POLYGON);
+	for (int i = 0; i <= 360; i++) {
+		float degInRad = i * M_PI / 180;
+		glVertex2f(cos(degInRad) * radius, sin(degInRad) * radius);
+	}
+	glEnd();
+}
+
+void drawSolarSystem() {
+	int doy = (glutGet(GLUT_ELAPSED_TIME) / 50) % 365 + 1; // 1-365
+	
+	drawSun();
+	glRotatef(45 + (doy - 1) / 365.0 * 360, 0, 0, -1);
+	glTranslatef(0, 5, 0);
+
+	drawEarth();
+	glRotatef((doy - 1) / 28.0 * 360, 0, 0, -1);
+	glTranslatef(0, 1, 0);
+
+	drawMoon();
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -168,7 +215,8 @@ void display(void) {
 	//reflectAlongAxis(); //Semester 1, 2016/2017, Question 2
 	//drawPattern(50); //Semester 2, 2015/2016, Question 1
 	//drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
-	drawRecursiveCircle(3);  //Semester 2, 2014/2015, Question 2
+	//drawRecursiveCircle(3);  //Semester 2, 2014/2015, Question 2
+	drawSolarSystem();
 
 	//end
 	glPopMatrix();
@@ -265,6 +313,7 @@ int main(int argc, char **argv) {
 	glutCreateWindow(argv[0]);
 	init();
 	glutDisplayFunc(display);
+	glutIdleFunc(display);
 	glutReshapeFunc(reshape);
 	//glutMouseFunc(mouse);
 	glutKeyboardFunc(keyboard);
