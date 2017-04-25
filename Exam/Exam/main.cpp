@@ -154,7 +154,7 @@ void drawRecursiveCircle(int n) {
 	}
 }
 
-void drawMoon() {
+void drawMoonForSolarSystem() {
 	double radius = 0.2;
 	glColor3f(0.5, 0.5, 0.5);
 	glBegin(GL_POLYGON);
@@ -165,7 +165,7 @@ void drawMoon() {
 	glEnd();
 }
 
-void drawEarth() {
+void drawEarthForSolarSystem() {
 	double radius = 0.5;
 	glColor3f(0, 1, 1);
 	glBegin(GL_POLYGON);
@@ -176,7 +176,7 @@ void drawEarth() {
 	glEnd();
 }
 
-void drawSun() {
+void drawSunForSolarSystem() {
 	double radius = 1;
 	glColor3f(1, 1, 0);
 	glBegin(GL_POLYGON);
@@ -190,15 +190,15 @@ void drawSun() {
 void drawSolarSystem() {
 	int doy = (glutGet(GLUT_ELAPSED_TIME) / 50) % 365 + 1; // 1-365
 	
-	drawSun();
+	drawSunForSolarSystem();
 	glRotatef(45 + (doy - 1) / 365.0 * 360, 0, 0, -1);
 	glTranslatef(0, 5, 0);
 
-	drawEarth();
+	drawEarthForSolarSystem();
 	glRotatef((doy - 1) / 28.0 * 360, 0, 0, -1);
 	glTranslatef(0, 1, 0);
 
-	drawMoon();
+	drawMoonForSolarSystem();
 }
 
 void display(void) {
@@ -216,7 +216,7 @@ void display(void) {
 	//drawPattern(50); //Semester 2, 2015/2016, Question 1
 	//drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
 	//drawRecursiveCircle(3);  //Semester 2, 2014/2015, Question 2
-	drawSolarSystem();
+	drawSolarSystem(); //Semester 2, 2013/2014, Question 2
 
 	//end
 	glPopMatrix();
