@@ -262,7 +262,7 @@ Vector2d unitTangentVector(double t) {
 		2 * t * 200;
 
 	double y = 2 * (t - 1) * 100 +
-		(2 - 4 * t) * -100 +
+		(2 - (4 * t)) * -100 +
 		2 * t * 100;
 	
 	double denom = sqrt(pow(x, 2) + pow(y, 2));
@@ -283,15 +283,15 @@ void drawFlowersAndValley() {
 
 	for (double i = 1; i < 10; i++) {
 		Vector2d point = BezierCurve(i / 10.0);
-		Vector2d tangent = unitTangentVector(i);
+		Vector2d tangent = unitTangentVector(i / 10.0);
 		double angle = atan(tangent.y / tangent.x) * 180 / 3.14159265;
 		if (tangent.x < 0) {
 			angle += 180;
 		}
-		cout << "\n" << angle;
-
+		
 		glPushMatrix();
 		glTranslatef(point.x, point.y, 0);
+		glRotatef(90, 0, 0, 1);
 		glRotatef(angle, 0, 0, 1);
 		drawAFlower();
 		glPopMatrix();
