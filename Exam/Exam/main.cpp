@@ -201,6 +201,104 @@ void drawSolarSystem() {
 	drawMoonForSolarSystem();
 }
 
+class Vector2d {
+public:
+	double x;
+	double y;
+
+	Vector2d(double _x, double _y) {
+		x = _x;
+		y = _y;
+	}
+};
+
+Vector2d BezierCurve(double t) {
+	double x = pow((1 - t), 2) * -200 +
+		0 +
+		pow(t, 2) * 200;
+
+	double y = pow((1 - t), 2) * 100 +
+		2 * (1 - t) * t * -100 +
+		pow(t, 2) * 100;
+	
+	return Vector2d(x, y);
+}
+
+void drawValley() {
+	glScalef(0.03, 0.03, 0.03);
+
+	glColor3f(0.5, 0.5, 0.5);
+	Vector2d curr = BezierCurve(0);
+	Vector2d first = Vector2d(-200, -100);
+	Vector2d last = Vector2d(200, -100);
+	for (double i = 1; i < 11; i++) {
+		glBegin(GL_TRIANGLES);
+		Vector2d point = BezierCurve(i / 10.0);
+		glVertex2f(curr.x, curr.y);
+		glVertex2f(point.x, point.y);
+		if (i <= 5) {
+			glVertex2f(first.x, first.y);
+		}
+		else {
+			glVertex2f(last.x, last.y);		}
+		curr = point;
+		glEnd();
+
+		if (i == 5) {
+			glBegin(GL_TRIANGLES);
+			glVertex2f(first.x, first.y);
+			glVertex2f(last.x, last.y);
+			glVertex2f(curr.x, curr.y);
+			glEnd();
+		}
+	}/*
+	*/
+	
+}
+
+Vector2d unitTangentVector(double t) {
+	double x = 2 * (t - 1) * -200 +
+		0 +
+		2 * t * 200;
+
+	double y = 2 * (t - 1) * 100 +
+		(2 - 4 * t) * -100 +
+		2 * t * 100;
+	
+	double denom = sqrt(pow(x, 2) + pow(y, 2));
+
+	return Vector2d(x / denom, y / denom);
+}
+
+void drawAFlower() {
+	glColor3f(1, 0, 0);
+	glBegin(GL_TRIANGLES);
+	glVertex2f(0, 0);
+	glVertex2f(20, -5);
+	glVertex2f(20, 5);
+	glEnd();
+}
+void drawFlowersAndValley() {
+	drawValley();
+
+	for (double i = 1; i < 10; i++) {
+		Vector2d point = BezierCurve(i / 10.0);
+		Vector2d tangent = unitTangentVector(i);
+		double angle = atan(tangent.y / tangent.x) * 180 / 3.14159265;
+		if (tangent.x < 0) {
+			angle += 180;
+		}
+		cout << "\n" << angle;
+
+		glPushMatrix();
+		glTranslatef(point.x, point.y, 0);
+		glRotatef(angle, 0, 0, 1);
+		drawAFlower();
+		glPopMatrix();
+		
+	}
+}
+
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -216,7 +314,8 @@ void display(void) {
 	//drawPattern(50); //Semester 2, 2015/2016, Question 1
 	//drawRecursiveSquare(3); //Semester 1, 2015/2016, Question 4 
 	//drawRecursiveCircle(3);  //Semester 2, 2014/2015, Question 2
-	drawSolarSystem(); //Semester 2, 2013/2014, Question 2
+	//drawSolarSystem(); //Semester 2, 2013/2014, Question 2
+	drawFlowersAndValley(); //Semester 2, 2013/2014, Question 3
 
 	//end
 	glPopMatrix();
