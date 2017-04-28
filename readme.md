@@ -15,3 +15,14 @@ This repo collates the assignments for NUS CS3241 Computer Graphics
 
 ## Lab 5: To Infinity and beyond (Ray tracing)
 Implmentation of a ray tracer on 4 primitive objects. Bonus features: Shadows, addition of cylinder object
+
+## Exam
+Selected solution for past year papers.  
+
+Hi future juniors, here's some tips for exams
+- Print out your MA1301 cheatsheet if you still have them. sqrt(3)/2 = cos30? You might need to know them.
+- Print out your github repo lol, kent ridge homenoffice charge 0.035 per page
+- Write down the bezier curve equation up to degree 4/5? and their derivatives, don't be a kuku and derive them on the spot
+  
+If you suck at math  
+- The for-loop for drawing circles? Good time to figure out where is the start/ end point and their degree.
